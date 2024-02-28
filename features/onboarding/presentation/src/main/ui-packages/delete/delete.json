@@ -1,0 +1,89 @@
+{
+  "name": "delete",
+  "version": 32,
+  "source-key": {
+    "type": "figma",
+    "file": "6gL0osXBq3t0tI7QpGwXij",
+    "node": "6:1705",
+    "version": "5162746718",
+    "component-id": "1fe8fafb1fda267bfa07e901349fe6ab4dcaf516"
+  },
+  "default": "Delete",
+  "design": {
+    "atoms": [
+      {
+        "type": "group",
+        "id": "top_level",
+        "root": "true"
+      },
+      {
+        "type": "vector",
+        "id": "Bounding box"
+      },
+      {
+        "type": "vector",
+        "id": "delete"
+      }
+    ],
+    "modes": {
+      "Delete": {
+        "rules": [
+          {
+            "id": "top_level",
+            "is-structured": "false",
+            "children": [
+              "Bounding box",
+              "delete"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "Bounding box",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            }
+          },
+          {
+            "id": "delete",
+            "margin": {
+              "left": "4.0",
+              "top": "3.0",
+              "right": "4.0",
+              "bottom": "3.0"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "delete.svg"
+          }
+        ]
+      }
+    }
+  },
+  "previews": [
+    {
+      "design": "Delete",
+      "size": {
+        "width": 24.0,
+        "height": 24.0
+      }
+    }
+  ],
+  "adin-component-search-paths": [],
+  "image-search-paths": [],
+  "vector-search-paths": []
+}
