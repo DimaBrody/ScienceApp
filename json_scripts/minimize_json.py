@@ -1,8 +1,8 @@
 import json
 
 # Paths for the input and output JSON files
-INPUT_JSON_PATH = './jsons/subjects_with_bits.json'  # Path to the original JSON file
-OUTPUT_MIN_JSON_PATH = '../shared/subjects/data/src/main/assets/subjects_min.json'  # Path for the minimized JSON file
+INPUT_JSON_PATH = './jsons/id_name.json'  # Path to the original JSON file
+OUTPUT_MIN_JSON_PATH = '../shared/subjects/data/src/main/assets/id_name_min.json'  # Path for the minimized JSON file
 
 def minimize_json(input_path, output_path):
     # Load the original JSON data

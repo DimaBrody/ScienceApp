@@ -2,6 +2,7 @@ import com.android.build.gradle.internal.dsl.LibraryExtensionImpl
 
 plugins {
     alias(libs.plugins.brody.android.arch.model.presentation)
+    alias(libs.plugins.brody.android.library.compose)
 }
 android {
     namespace = "com.brody.arxiv.shared.subjects.models.presentation"

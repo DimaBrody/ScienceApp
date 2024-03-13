@@ -16,7 +16,6 @@ class AndroidModelPresentationConventionPlugin : Plugin<Project> {
 
             pluginManager.apply {
                 apply("brody.android.library")
-                apply("brody.android.library.compose")
             }
 
             dependencies {

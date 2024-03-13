@@ -8,6 +8,7 @@ import com.brody.arxiv.shared.subjects.models.data.ArxivSubjectsJsonModel
 import com.brody.arxiv.shared.subjects.models.domain.SubjectDescriptions
 import com.brody.arxiv.core.threading.ArxivDispatchers.IO
 import com.brody.arxiv.core.threading.Dispatcher
+import com.brody.arxiv.shared.subjects.models.domain.SubjectNames
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +22,7 @@ import kotlin.coroutines.CoroutineContext
 
 const val SUBJECTS_PATH = "subjects_min.json"
 const val DESCRIPTIONS_PATH = "descriptions.json"
+const val NAMES_PATH = "id_name_min.json"
 
 internal class SubjectsDataSourceImpl @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -45,6 +47,15 @@ internal class SubjectsDataSourceImpl @Inject constructor(
     private fun loadSubjectDescriptions(): SubjectDescriptions {
         val jsonString =
             context.assets.open(DESCRIPTIONS_PATH).bufferedReader().use { it.readText() }
+        return parseSubjectsJson(jsonString)
+    }
+
+    override val subjectNames: Flow<SubjectNames>
+        get() = flow { emit(loadSubjectNames()) }.flowOn(ioDispatcher)
+
+    private fun loadSubjectNames(): SubjectNames {
+        val jsonString =
+            context.assets.open(NAMES_PATH).bufferedReader().use { it.readText() }
         return parseSubjectsJson(jsonString)
     }
 

@@ -1,6 +1,11 @@
 package com.brody.arxiv.shared.subjects.models.domain
 
+import android.util.Log
+import com.brody.arxiv.core.common.models.LinkBits
+
 typealias SubjectDescriptions = HashMap<String, String>
+
+typealias SubjectNames = HashMap<String, String>
 
 const val NODE_NOT_FOUND_TEXT = "Node not found in subjects!"
 
@@ -20,19 +25,46 @@ class SubjectsHierarchy : HashMap<Int, CategoriesNode>() {
         val item = intLinkToNode(link)
         item.setSelected(isSelected)
 
-        return getSelectedIds()
+        return getSelectedLinkIds()
     }
 
-    fun getSelectedIds(): List<Int> {
-        return values.map(::getSelectedIdsForNode).flatten()
+    fun getSelectedLinkIds(): List<Int> {
+        return values.flatMap(::getSelectedNodes).map { it.createIntLink() }
     }
 
-    private fun getSelectedIdsForNode(node: CategoriesNode): List<Int> {
-        val ids = mutableListOf<Int>()
+    // First - selectedIds, second - excludedIds
+    fun getSelectedIds(
+        excludedIds: List<Int>? = null, isSelectSubjects: Boolean = false
+    ): Pair<List<String>, List<String>> {
+
+        var selectedNodes = values.flatMap(::getSelectedNodes)
+        val excludedStringIds = mutableListOf<String>()
+
+        excludedIds?.let { ids ->
+            excludedStringIds.addAll(selectedNodes.filter { it.createIntLink() in ids }
+                .map { it.id })
+            selectedNodes = selectedNodes.filter { it.createIntLink() !in ids }
+        }
+
+//        if (isSelectSubjects) return selectedNodes.map { it.id }
+
+
+        val mutableNodes = mutableListOf<CategoriesNode>()
+
+        for (node in selectedNodes) {
+            if (node.type == SubjectType.SUBJECT) {
+                mutableNodes.addAll(node.childrenNodes?.values ?: emptyList())
+            } else mutableNodes.add(node)
+        }
+        return Pair(mutableNodes.map { it.id }, excludedStringIds)
+    }
+
+    private fun getSelectedNodes(node: CategoriesNode): List<CategoriesNode> {
+        val ids = mutableListOf<CategoriesNode>()
 
         node.childrenNodes?.values?.forEach {
-            if (it.isSelected == SelectedType.SELECTED) ids.add(it.createIntLink())
-            else ids.addAll(getSelectedIdsForNode(it))
+            if (it.isSelected == SelectedType.SELECTED) ids.add(it)
+            else ids.addAll(getSelectedNodes(it))
         }
 
         return ids
@@ -91,23 +123,6 @@ class SubjectsHierarchy : HashMap<Int, CategoriesNode>() {
         node.setSelected(false)
         node.childrenNodes?.values?.forEach { childNode ->
             clearNodeSelected(childNode)
-        }
-    }
-}
-
-data class LinkBits(val subjectBits: Int, val categoryBits: Int, val subCategoryBits: Int) {
-
-    fun createLinkFromBits(): Int {
-        // Shift and combine the bits according to the 4-20-8 structure
-        return (subjectBits shl 28) or (categoryBits shl 8) or subCategoryBits
-    }
-
-    companion object {
-        fun extractLinkBits(link: Int): LinkBits {
-            val subjectBits = link shr 28 and 0xF  // Extract the 4 subject bits
-            val categoryBits = link shr 8 and 0xFFFFF  // Extract the 20 category bits
-            val subCategoryBits = link and 0xFF  // Extract the 8 sub-category bits
-            return LinkBits(subjectBits, categoryBits, subCategoryBits)
         }
     }
 }

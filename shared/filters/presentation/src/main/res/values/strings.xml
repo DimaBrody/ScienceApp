@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shared_filters_title">Filters</string>
+    <string name="shared_filters_sort_by">Sort By</string>
+    <string name="shared_filters_sort_order">Sort Order</string>
+</resources>

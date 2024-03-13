@@ -17,5 +17,8 @@
         <item name="android:windowBackground">@color/background</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
+<!--        <item name="android:windowTranslucentStatus">true</item>-->
     </style>
 </resources>

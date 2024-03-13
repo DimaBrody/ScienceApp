@@ -8,7 +8,7 @@ val Pink80 = Color(0xFFEFB8C8)
 
 val Primary = Color(0xFFAD322A)
 val OnPrimary = Color(0xFFFFFFFF)
-val PrimaryContainer = Color(0xFFFFF0EE)
+val PrimaryContainer = Color(0xFFFFDAD5)
 val OnPrimaryContainer = Color(0xFF410002)
 
 val Secondary = Color(0xFFFFDAD5)
@@ -23,6 +23,7 @@ val OnSurfaceVariant = Color(0xFF534341)
 val SurfaceContainer = Color(0xFFF6E4E2)
 val OnSurfaceContainer = Color(0xFF534341)
 val OnSurface60 = Color(0xBB534341)
+val OnSurface40 = Color(0xFF4E4444)
 
 val OutlineVariant = Color(0xFFD8C2BF)
 val Outline = Color(0xFF857371)

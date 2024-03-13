@@ -14,7 +14,8 @@ dependencies {
 
     implementation(libs.androidx.compose.coil)
     implementation(libs.androidx.compose.coil.svg)
+    implementation(libs.retrofit.converter)
     api(libs.okhttp.logging)
     api(libs.retrofit.core)
-    api(libs.retrofit.moshi)
+    api(libs.android.xmlutil)
 }

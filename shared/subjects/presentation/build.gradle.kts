@@ -7,6 +7,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.threading)
+
     implementation(project(":shared:subjects:domain"))
     implementation(project(":shared:subjects:models:domain"))
     implementation(project(":shared:subjects:models:presentation"))

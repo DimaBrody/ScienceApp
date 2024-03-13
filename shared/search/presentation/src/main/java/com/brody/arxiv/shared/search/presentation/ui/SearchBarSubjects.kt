@@ -23,11 +23,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Info
+
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -67,6 +63,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.brody.arxiv.core.common.models.LinkBits
 import com.brody.arxiv.designsystem.dimens.Dimens.zeroDp
 import com.brody.arxiv.designsystem.animations.animateDpAsStateNoLabel
 import com.brody.arxiv.designsystem.dimens.Dimens
@@ -74,14 +71,15 @@ import com.brody.arxiv.designsystem.extensions.scrollTo
 import com.brody.arxiv.designsystem.theme.ArxivTheme
 import com.brody.arxiv.designsystem.theme.OnSurface
 import com.brody.arxiv.designsystem.theme.OnSurfaceVariant
+import com.brody.arxiv.designsystem.theme.OnboardingSmall
 import com.brody.arxiv.designsystem.theme.Primary
+import com.brody.arxiv.designsystem.ui.icons.ArxivIcons
 import com.brody.arxiv.shared.search.models.presentation.SearchCategoriesNode
 import com.brody.arxiv.shared.search.models.presentation.findNodeByBits
 import com.brody.arxiv.shared.search.presentation.R
 import com.brody.arxiv.shared.search.presentation.dimens.SearchDimens
 import com.brody.arxiv.shared.search.presentation.dimens.SearchDimens.ActiveSearchPadding
 import com.brody.arxiv.shared.search.presentation.dimens.SearchDimens.InactiveSearchPadding
-import com.brody.arxiv.shared.subjects.models.domain.LinkBits
 import com.brody.arxiv.shared.subjects.models.domain.SubjectType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -142,13 +140,13 @@ fun CustomSearchBar(
             ),
         placeholder = { Text(searchText) },
         leadingIcon = {
-            Icon(imageVector = Icons.Default.Search, contentDescription = searchIconText)
+            Icon(imageVector = ArxivIcons.Search, contentDescription = searchIconText)
         },
         trailingIcon = {
             if (viewModel.isSearchActive) {
                 Icon(
                     modifier = Modifier.clickable(onClick = viewModel::handleSearchClose),
-                    imageVector = Icons.Default.Close,
+                    imageVector = ArxivIcons.Close,
                     contentDescription = closeIconText
                 )
             }
@@ -292,7 +290,7 @@ fun SearchListItem(
                     if (node.type != SubjectType.SUBJECT) {
                         IconButton(onClick = { openBottomDialog?.invoke(node) }) {
                             Icon(
-                                Icons.Outlined.Info,
+                                ArxivIcons.Info,
                                 contentDescription = null,
                             )
                         }
@@ -305,7 +303,7 @@ fun SearchListItem(
                         )
                         Spacer(Modifier.width(Dimens.spacingTiny))
                         Icon(
-                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            ArxivIcons.SmallArrowRight,
                             contentDescription = null,
                         )
                     }
@@ -360,13 +358,12 @@ fun ModalSheetContent(data: BottomSheetData) {
             Text(
                 text = "(${data.id})",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = SearchDimens.bsSmallText)
             )
         }
         Text(
             text = data.desc,
-            style = MaterialTheme.typography.bodyLarge,
+            style = OnboardingSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
@@ -399,7 +396,7 @@ fun SearchPagerExpanded(
         ) {
             IconButton(onClick = onBackPressed) {
                 Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
+                    ArxivIcons.ArrowBack,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface
                 )

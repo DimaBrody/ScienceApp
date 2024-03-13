@@ -20,96 +20,114 @@ import android.content.Context
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.util.DebugLogger
-import com.brody.arxiv.core.network.service.ChannelService
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import nl.adaptivity.xmlutil.ExperimentalXmlUtilApi
+import nl.adaptivity.xmlutil.serialization.DefaultXmlSerializationPolicy
+import nl.adaptivity.xmlutil.serialization.XML
+import nl.adaptivity.xmlutil.serialization.XmlConfig.Companion.IGNORING_UNKNOWN_CHILD_HANDLER
+import nl.adaptivity.xmlutil.serialization.XmlSerializationPolicy
 import okhttp3.Call
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 
 @Module
 @InstallIn(SingletonComponent::class)
 internal object NetworkModule {
 
-  @Provides
-  @Singleton
-  fun provideOkHttpClient(): OkHttpClient {
-    return OkHttpClient.Builder()
-      .connectTimeout(60, TimeUnit.SECONDS)
-      .readTimeout(60, TimeUnit.SECONDS)
-      .writeTimeout(15, TimeUnit.SECONDS)
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
 
-      .apply {
-        //TODO: MAKE FOR DEBUG AND RELEASE
+            .apply {
+                //TODO: MAKE FOR DEBUG AND RELEASE
 //        if (BuildConfig.DEBUG) {
-          this.addNetworkInterceptor(
-            HttpLoggingInterceptor().apply {
-              level = HttpLoggingInterceptor.Level.BODY
-            }
-          )
+                this.addNetworkInterceptor(
+                    HttpLoggingInterceptor().apply {
+                        level = HttpLoggingInterceptor.Level.BODY
+                    }
+                )
 //        }
-      }
-      .build()
-  }
+            }
+            .build()
+    }
 
-  @Provides
-  @Singleton
-  fun okHttpCallFactory(): Call.Factory = OkHttpClient.Builder()
-    .addInterceptor(
-      HttpLoggingInterceptor()
-        .apply {
+    @Provides
+    @Singleton
+    fun okHttpCallFactory(): Call.Factory = OkHttpClient.Builder()
+        .addInterceptor(
+            HttpLoggingInterceptor()
+                .apply {
 //          if (BuildConfig.DEBUG) {
-            setLevel(HttpLoggingInterceptor.Level.BODY)
+                    setLevel(HttpLoggingInterceptor.Level.BODY)
 //          }
-        },
-    )
-    .build()
+                },
+        )
+        .build()
 
-  @Provides
-  @Singleton
-  fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
-    return Retrofit.Builder()
-      .client(okHttpClient)
-      .baseUrl(
-        "https://gist.githubusercontent.com/skydoves/a572b299a907753587818be56f3d3449/raw/" +
-          "5c3e9a76e3848d83cc679a372c8b4875bb94b193/"
-      )
-      .addConverterFactory(MoshiConverterFactory.create().asLenient())
-//      .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
-      .build()
-  }
 
-  @Provides
-  @Singleton
-  fun provideChannelService(retrofit: Retrofit): ChannelService = retrofit.create()
-
-  @Provides
-  @Singleton
-  fun imageLoader(
-    okHttpCallFactory: Call.Factory,
-    @ApplicationContext application: Context,
-  ): ImageLoader = ImageLoader.Builder(application)
-    .callFactory(okHttpCallFactory)
-    .components {
-      add(SvgDecoder.Factory())
+    @OptIn(ExperimentalXmlUtilApi::class)
+    @Provides
+    fun provideXml(): XML = XML {
+        policy = DefaultXmlSerializationPolicy {
+            unknownChildHandler = IGNORING_UNKNOWN_CHILD_HANDLER
+        }
     }
-    // Assume most content images are versioned urls
-    // but some problematic images are fetching each time
-    .respectCacheHeaders(false)
-    .apply {
-      //TODO
+
+    @Provides
+    fun provideXmlConverterFactory(xml: XML): Converter.Factory {
+        return xml.asConverterFactory("application/xml; charset=utf-8".toMediaType())
+    }
+
+    private const val ARXIV_URL = "http://export.arxiv.org"
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(
+        okHttpClient: OkHttpClient,
+        xmlConverterFactory: Converter.Factory
+    ): Retrofit {
+        return Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl(ARXIV_URL)
+            .addConverterFactory(xmlConverterFactory)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun imageLoader(
+        okHttpCallFactory: Call.Factory,
+        @ApplicationContext application: Context,
+    ): ImageLoader = ImageLoader.Builder(application)
+        .callFactory(okHttpCallFactory)
+        .components {
+            add(SvgDecoder.Factory())
+        }
+        // Assume most content images are versioned urls
+        // but some problematic images are fetching each time
+        .respectCacheHeaders(false)
+        .apply {
+            //TODO
 //      if (BuildConfig.DEBUG) {
-        logger(DebugLogger())
+            logger(DebugLogger())
 //      }
-    }
-    .build()
+        }
+        .build()
 }

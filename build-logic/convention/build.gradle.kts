@@ -13,6 +13,7 @@ dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.spotless.gradlePlugin)
+    compileOnly(libs.ksp.gradlePlugin)
 }
 
 gradlePlugin {
@@ -32,6 +33,10 @@ gradlePlugin {
         register("androidLibrary") {
             id = "brody.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
+        }
+        register("androidLibraryLower") {
+            id = "brody.android.library.lower"
+            implementationClass = "AndroidLowerLibraryConventionPlugin"
         }
 
         register("androidPresentation") {
@@ -58,6 +63,14 @@ gradlePlugin {
         register("androidModelData") {
             id = "brody.android.model.data"
             implementationClass = "architecture.models.AndroidModelDataConventionPlugin"
+        }
+        register("androidRoom") {
+            id = "brody.android.room"
+            implementationClass = "room.AndroidRoomConventionPlugin"
+        }
+        register("androidRoomExtended") {
+            id = "brody.android.room.extended"
+            implementationClass = "room.AndroidRoomExtendedConventionPlugin"
         }
 
         register("androidSerialization"){

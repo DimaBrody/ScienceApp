@@ -7,5 +7,5 @@ android {
 }
 
 dependencies {
-    implementation(project(":shared:subjects:models:domain"))
+    implementation(projects.shared.subjects.models.domain)
 }

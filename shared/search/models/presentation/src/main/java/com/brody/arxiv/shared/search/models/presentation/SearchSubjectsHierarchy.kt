@@ -1,7 +1,7 @@
 package com.brody.arxiv.shared.search.models.presentation
 
+import com.brody.arxiv.core.common.models.LinkBits
 import com.brody.arxiv.shared.subjects.models.domain.CategoriesNode
-import com.brody.arxiv.shared.subjects.models.domain.LinkBits
 import com.brody.arxiv.shared.subjects.models.domain.SelectedType
 import com.brody.arxiv.shared.subjects.models.domain.SubjectType
 import com.brody.arxiv.shared.subjects.models.domain.SubjectsHierarchy

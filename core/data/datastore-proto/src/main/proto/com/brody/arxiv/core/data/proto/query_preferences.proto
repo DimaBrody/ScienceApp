@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+//import "com/google/samples/apps/nowinandroid/data/dark_theme_config.proto";
+//import "com/google/samples/apps/nowinandroid/data/theme_brand.proto";
+
+option java_package = "com.brody.arxiv.shared.settings.data";
+option java_multiple_files = true;
+
+message QueryPreferences {
+    SortBy sortBy = 1;
+    SortOrder sortOrder = 2;
+
+    map<int32, bool> excludedIds = 3;
+}
+
+enum SortBy {
+  RELEVANCE = 0;
+  LAST_UPDATED_DATE = 1;
+  SUBMITTED_DATE = 2;
+}
+
+enum SortOrder {
+  DESC = 0;
+  ASC = 1;
+}

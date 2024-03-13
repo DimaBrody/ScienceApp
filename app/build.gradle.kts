@@ -74,12 +74,23 @@ dependencies {
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:data:network"))
-    implementation(project(":core:threading"))
 
     implementation(project(":features:onboarding:presentation"))
+    implementation(project(":features:papers:presentation"))
+    implementation(project(":features:explore:presentation"))
+    implementation(project(":features:saved:presentation"))
+    implementation(project(":features:settings:presentation"))
+    implementation(project(":features:details:presentation"))
+
     implementation(project(":shared:subjects:domain"))
     implementation(project(":shared:subjects:models:domain"))
+
+    // DATA
     implementation(project(":shared:subjects:data"))
+    implementation(project(":shared:papers:data"))
+    implementation(project(":shared:saved:data"))
+    implementation(project(":shared:settings:data"))
+
 
     // compose
     implementation(libs.androidx.activity.compose)
@@ -91,6 +102,7 @@ dependencies {
     implementation(libs.androidx.compose.coil)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.accompanist.statusbar)
+    implementation(libs.androidx.navigation.compose)
 
     // jetpack
     implementation(libs.androidx.startup)

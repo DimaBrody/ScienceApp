@@ -40,6 +40,11 @@ internal class SubjectsRepositoryImpl @Inject constructor(
             scope, SharingStarted.WhileSubscribed(), replay = 1
         )
 
+    override val subjectNames: Flow<SubjectDescriptions>
+        get() = subjectsDataSource.subjectNames.shareIn(
+            scope, SharingStarted.WhileSubscribed(), replay = 1
+        )
+
     override val allUserSubjects: Flow<SubjectsHierarchy> = userSubjects.combine(
         allSubjects
     ) { userSubjects, allSubjects ->

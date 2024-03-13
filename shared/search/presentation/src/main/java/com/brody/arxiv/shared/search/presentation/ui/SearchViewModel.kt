@@ -6,6 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.brody.arxiv.core.threading.ArxivDispatchers.IO
+import com.brody.arxiv.core.threading.Dispatcher
 import com.brody.arxiv.shared.search.models.presentation.SearchCategoriesNode
 import com.brody.arxiv.shared.search.models.presentation.SearchSubjectsHierarchy
 import com.brody.arxiv.shared.search.models.presentation.toPresentationModel
@@ -15,7 +17,7 @@ import com.brody.arxiv.shared.subjects.domain.usecases.UpdateSubjectSaved
 import com.brody.arxiv.shared.subjects.domain.usecases.UpdateSubjectsList
 import com.brody.arxiv.shared.subjects.models.domain.SubjectDescriptions
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -29,7 +31,8 @@ class SearchViewModel @Inject constructor(
     getSubjectsWithSaved: GetSubjectsWithSaved,
     private val updateSubjectSaved: UpdateSubjectSaved,
     private val updateSubjectsList: UpdateSubjectsList,
-    getSubjectDescriptions: GetSubjectDescriptions
+    getSubjectDescriptions: GetSubjectDescriptions,
+    @Dispatcher(IO) private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
     private val subjectsFlow = getSubjectsWithSaved()
 
@@ -55,7 +58,7 @@ class SearchViewModel @Inject constructor(
     ) { subjects, query, isActive ->
         if (isUpdateRequired) {
             isUpdateRequired = false
-            if (subjects.getSelectedIds().sum() != latestSubjectsSum)
+            if (subjects.getSelectedLinkIds().sum() != latestSubjectsSum)
                 SearchSubjectsUiState.Inactive
         }
 
@@ -96,15 +99,16 @@ class SearchViewModel @Inject constructor(
         else updateActive(false)
     }
 
-    fun updateActive(isActive: Boolean, chips: List<Int>? = null) = viewModelScope.launch {
-        if (!isActive && !pagerExpandedTitle.isNullOrEmpty())
-            updatePagerExpanded(null)
+    fun updateActive(isActive: Boolean, chips: List<Int>? = null) =
+        viewModelScope.launch(coroutineDispatcher) {
+            if (!isActive && !pagerExpandedTitle.isNullOrEmpty())
+                updatePagerExpanded(null)
 
-        setUpdateRequired(chips)
-        this@SearchViewModel.isSearchActive = isActive
+            setUpdateRequired(chips)
+            this@SearchViewModel.isSearchActive = isActive
 
-        chips?.let { updateSubjectsList.invoke(chips) }
-    }
+            chips?.let { updateSubjectsList.invoke(chips) }
+        }
 
     private fun setUpdateRequired(chips: List<Int>? = null) {
         val chipsSum = chips?.sum() ?: 0
@@ -112,12 +116,12 @@ class SearchViewModel @Inject constructor(
         latestSubjectsSum = chipsSum
     }
 
-    fun toggleSelection(node: SearchCategoriesNode) = viewModelScope.launch {
+    fun toggleSelection(node: SearchCategoriesNode) = viewModelScope.launch(coroutineDispatcher) {
         updateSelection(node, !node.isSelected)
     }
 
     private fun updateSelection(node: SearchCategoriesNode, isSelected: Boolean) =
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineDispatcher) {
             updateSubjectSaved(subjectsFlow.first(), node.link, isSelected)
         }
 
@@ -129,8 +133,8 @@ class SearchViewModel @Inject constructor(
         bottomSheetSubject = null
     }
 
-    fun closePagerExpanded(isFirstPage: Boolean){
-        if(isFirstPage) updatePagerExpanded(null)
+    fun closePagerExpanded(isFirstPage: Boolean) {
+        if (isFirstPage) updatePagerExpanded(null)
         else updatePagerExpanded(prevExpandedTitle)
     }
 

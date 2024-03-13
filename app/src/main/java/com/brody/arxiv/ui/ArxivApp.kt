@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.brody.arxiv.core.network.util.NetworkMonitor
+import com.brody.arxiv.designsystem.ui.background.ArxivBackground
 import com.brody.arxiv.navigation.ArxivNavHost
 import com.brody.arxiv.navigation.base.ArxivComposeNavigator
 
@@ -24,5 +25,7 @@ fun ArxivApp(
 //    }
     val isOffline by appState.isOffline.collectAsStateWithLifecycle()
 
-    ArxivNavHost(navHostController = appState.navController, isShowOnboarding)
+    ArxivBackground {
+        ArxivNavHost(appState = appState, isShowOnboarding)
+    }
 }

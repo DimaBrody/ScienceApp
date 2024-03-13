@@ -1,5 +1,6 @@
 package com.brody.arxiv.designsystem.theme
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -13,9 +14,9 @@ val Typography = Typography(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
-        lineHeight = 24.sp,
+        lineHeight = 20.sp,
         letterSpacing = 0.5.sp,
-        color = OnSurface60
+        color = OnSurface
     ),
     // #OnBoarding under Search text
     bodyMedium = TextStyle(
@@ -25,6 +26,16 @@ val Typography = Typography(
         lineHeight = 20.sp,
         letterSpacing = 0.5.sp,
         color = OnSurface60
+    ),
+
+    // Paper item text
+    bodySmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.25.sp,
+        color = OnSurfaceVariant
     ),
 
     //Toolbar Title
@@ -52,13 +63,23 @@ val Typography = Typography(
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = 0.5.sp,
+        color = OnSurfaceVariant
     )
-
 )
 
 val OnboardingTitleLarge = Typography.titleLarge.copy(
     fontWeight = FontWeight.Medium,
     fontSize = 22.sp,
     color = OnPrimaryContainer
+)
+
+val OnboardingSmall = Typography.bodyLarge.copy(
+    lineHeight = 24.sp,
+    color = OnSurface60
+)
+
+val FilterTitleText = Typography.bodyLarge.copy(
+    fontWeight = FontWeight.Medium,
+    color = OnSurface40
 )
