@@ -55,6 +55,10 @@ paging3 = "3.2.1"
 paging3compose = "3.3.0-alpha03"
 protobuf = "3.25.0"
 protobufPlugin = "0.9.4"
+pullRefresh = "1.1.1"
+firebaseCrashlyticsBuildtools = "2.9.9"
+browser = "1.8.0"
+markdown = "0.4.1"
 
 
 
@@ -121,9 +125,11 @@ androidx-accompanist-statusbar = { group = "com.google.accompanist", name = "acc
 androidx-accompanist-pager = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "accompanist" }
 androidx-accompanist-navanims = { group = "com.google.accompanist", name = "accompanist-navigation-animation", version.ref = "accompanist" }
 androidx-accompanist-placeholder = { group = "com.google.accompanist", name = "accompanist-placeholder-material3", version.ref = "accompanist" }
+androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 google-generativeai = { module = "com.google.ai.client.generativeai:generativeai", version.ref = "generativeAI" }
 android-xmlutil = { group = "io.github.pdvrieze.xmlutil", name = "serialization-android", version.ref = "xmlUtil" }
 retrofit-converter = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "retrofitConverter" }
+compose-markdown = { group = "com.github.jeziellago", name= "compose-markdown", version.ref = "markdown" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -133,6 +139,7 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 
 
 [plugins]
@@ -168,4 +175,5 @@ google-secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradl
 baseline-profile = { id = "androidx.baselineprofile", version.ref = "androidxMacroBenchmark" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin1922" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin1922" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin1922" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }

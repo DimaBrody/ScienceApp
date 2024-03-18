@@ -1,15 +1,11 @@
-package com.brody.arxiv.shared.search.models.presentation
+package com.brody.arxiv.shared.subjects.models.presentation
 
 import com.brody.arxiv.core.common.models.LinkBits
 import com.brody.arxiv.shared.subjects.models.domain.CategoriesNode
-import com.brody.arxiv.shared.subjects.models.domain.SelectedType
-import com.brody.arxiv.shared.subjects.models.domain.SubjectType
-import com.brody.arxiv.shared.subjects.models.domain.SubjectsHierarchy
-import com.brody.arxiv.shared.subjects.models.presentation.SubjectChipData
 
-typealias SearchSubjectsHierarchy = Map<Int, SearchCategoriesNode>
+typealias SubjectsHierarchyUiModel = Map<Int, CategoriesNodeUiModel>
 
-fun Map<Int, CategoriesNode>.toPresentationModel(filteredString: String): SearchSubjectsHierarchy {
+fun Map<Int, CategoriesNode>.toPresentationModel(filteredString: String): SubjectsHierarchyUiModel {
 
     return mapNotNull { (key, value) ->
         value.filterNode(filteredString)?.let {
@@ -18,8 +14,8 @@ fun Map<Int, CategoriesNode>.toPresentationModel(filteredString: String): Search
     }.toMap()
 }
 
-fun CategoriesNode.filterNode(filteredString: String?): SearchCategoriesNode? {
-    var childrenNodesToSet: Map<Int, SearchCategoriesNode>? =
+fun CategoriesNode.filterNode(filteredString: String?): CategoriesNodeUiModel? {
+    var childrenNodesToSet: Map<Int, CategoriesNodeUiModel>? =
         childrenNodes?.entries?.mapNotNull { entry ->
             entry.value.filterNode(filteredString)?.let {
                 entry.key to it
@@ -30,16 +26,16 @@ fun CategoriesNode.filterNode(filteredString: String?): SearchCategoriesNode? {
 
     return if (childrenNodesToSet == null) {
         if (checkNameContains(filteredString)) {
-            SearchCategoriesNode(
+            CategoriesNodeUiModel(
                 id, createIntLink(), idBit, name, type, isSelected, null
             )
         } else null
-    } else SearchCategoriesNode(
+    } else CategoriesNodeUiModel(
         id, createIntLink(), idBit, name, type, isSelected, childrenNodesToSet
     )
 }
 
-fun SearchSubjectsHierarchy.findNodeByBits(bits: LinkBits?): SearchCategoriesNode? {
+fun SubjectsHierarchyUiModel.findNodeByBits(bits: LinkBits?): CategoriesNodeUiModel? {
     if (bits == null) {
         return null
     }

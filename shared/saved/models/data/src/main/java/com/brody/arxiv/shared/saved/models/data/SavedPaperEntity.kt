@@ -3,9 +3,11 @@ package com.brody.arxiv.shared.saved.models.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.brody.arxiv.shared.papers.models.domain.DomainAuthor
+import com.brody.arxiv.shared.papers.models.domain.DomainCategory
 import com.brody.arxiv.shared.papers.models.domain.DomainLink
 import com.brody.arxiv.shared.papers.models.domain.PaperDomainModel
-import com.brody.arxiv.shared.saved.models.domain.SavePaperData
+import com.brody.arxiv.shared.saved.models.domain.SaveablePaperDataModel
+import kotlinx.serialization.Serializable
 
 @Entity(tableName = "saved_papers")
 data class SavedPaperEntity(
@@ -18,7 +20,12 @@ data class SavedPaperEntity(
     val doi: String,
     val links: List<String>,
     val comment: String,
-    val category: String,
+    val categories: List<SavedCategoryEntry>
+)
+
+@Serializable
+data class SavedCategoryEntry(
+    val categoryName: String,
     val categoryId: String
 )
 
@@ -33,20 +40,20 @@ fun SavedPaperEntity.toDomainModel() = PaperDomainModel(
     links = links.map { DomainLink(it) },
     comment = comment,
     isSaved = true,
-    category = category,
-    categoryId = categoryId
+    categories = categories.map {
+        DomainCategory(it.categoryName, it.categoryId)
+    }
 )
 
-fun SavePaperData.toEntityModel() = SavedPaperEntity(
+fun SaveablePaperDataModel.toEntityModel() = SavedPaperEntity(
     id = id,
     updated = updated,
     published = published,
     title = title,
-    author = author,
+    author = authors,
     summary = summary,
     doi = doi,
     links = links,
     comment = comment,
-    category = category,
-    categoryId = categoryId
+    categories = categories.map { SavedCategoryEntry(it.categoryName, it.categoryId) }
 )

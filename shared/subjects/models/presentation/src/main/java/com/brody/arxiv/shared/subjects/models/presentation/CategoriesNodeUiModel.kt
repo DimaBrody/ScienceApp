@@ -1,4 +1,4 @@
-package com.brody.arxiv.shared.search.models.presentation
+package com.brody.arxiv.shared.subjects.models.presentation
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.state.ToggleableState
@@ -7,14 +7,14 @@ import com.brody.arxiv.shared.subjects.models.domain.SelectedType
 import com.brody.arxiv.shared.subjects.models.domain.SubjectType
 
 @Stable
-data class SearchCategoriesNode(
+data class CategoriesNodeUiModel(
     val id: String,
     val link: Int,
     val idBit: Int,
     val name: String,
     val type: SubjectType,
     val selectedType: SelectedType,
-    val childrenNodes: Map<Int, SearchCategoriesNode>?
+    val childrenNodes: Map<Int, CategoriesNodeUiModel>?
 ) {
     val childCount: Int
         get() = childrenNodes?.values?.let { children ->

@@ -20,6 +20,7 @@ dependencies {
     api(libs.androidx.compose.foundation)
     api(libs.androidx.compose.foundation.layout)
     api(libs.androidx.compose.constraintlayout)
+//    api(libs.pullrefresh)
     implementation(libs.androidx.accompanist.placeholder)
 
 }

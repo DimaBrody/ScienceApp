@@ -10,6 +10,7 @@ dependencies {
     implementation(project(":core:threading"))
 
     implementation(project(":shared:subjects:domain"))
+    implementation(project(":shared:subjects:presentation"))
     implementation(project(":shared:subjects:models:domain"))
     implementation(project(":shared:subjects:models:presentation"))
     implementation(project(":shared:search:models:presentation"))

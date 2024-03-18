@@ -34,6 +34,7 @@ import com.brody.arxiv.ui.ArxivApp
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -61,8 +62,10 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState
-                    .onEach { uiState = it }
-                    .collect()
+                    .onEach {
+                        if (uiState !is Success)
+                            uiState = it
+                    }.collect()
             }
         }
 
@@ -82,7 +85,6 @@ class MainActivity : ComponentActivity() {
 
                 ArxivTheme(currentState.isDarkTheme) {
                     ArxivApp(
-                        networkMonitor = networkMonitor,
                         isShowOnboarding = !currentState.isSubjectsPresent
                     )
                 }

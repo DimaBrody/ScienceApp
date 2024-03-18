@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.android.test) apply false
     alias(libs.plugins.kotlinAndroid) apply false
     alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.kotlin.parcelize) apply false
     alias(libs.plugins.protobuf) apply false
 }
 
@@ -20,6 +21,7 @@ buildscript {
     repositories {
         google()
         maven("https://plugins.gradle.org/m2/")
+        maven("https://jitpack.io")
     }
 }
 

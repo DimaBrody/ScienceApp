@@ -3,7 +3,11 @@ package com.brody.arxiv.shared.papers.data
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.brody.arxiv.core.common.exceptions.GenericNetworkException
+import com.brody.arxiv.core.common.exceptions.NoSavedException
+import com.brody.arxiv.core.common.exceptions.OfflineException
 import com.brody.arxiv.core.common.extensions.mapNotNullEmpty
+import com.brody.arxiv.core.network.util.NetworkMonitor
 import com.brody.arxiv.shared.papers.data.database.PapersDatabase
 import com.brody.arxiv.shared.papers.data.remote.source.PapersRemoteDataSource
 import com.brody.arxiv.shared.papers.domain.repository.PapersRepository
@@ -19,6 +23,7 @@ import java.io.IOException
 internal class PapersPagingSource(
     private val papersDatabase: PapersDatabase,
     private val papersDataSource: PapersRemoteDataSource,
+    private val networkMonitor: NetworkMonitor,
     private val query: RemoteQuery,
     private val subjectNames: SubjectNames
 ) : PagingSource<Int, PaperDomainModel>() {
@@ -33,7 +38,10 @@ internal class PapersPagingSource(
         return when (query) {
             is RemoteQuery.Offline -> {
                 val data = papersDatabase.papersDao()
-                    .getPaperEntities().first().map { it.toDomainModel(subjectNames) }
+                    .getPaperEntities().first().map { it.toDomainModel() }
+
+                if (data.isEmpty())
+                    return LoadResult.Error(GenericNetworkException())
 
                 LoadResult.Page(
                     data = data,
@@ -43,7 +51,11 @@ internal class PapersPagingSource(
             }
 
             is RemoteQuery.Search -> {
-                return try {
+                try {
+                    if (!networkMonitor.isOnline.first()) {
+                        return LoadResult.Error(OfflineException())
+                    }
+
                     val page: Int = params.key ?: 0
 
                     val limit: Int = params.loadSize
@@ -56,7 +68,7 @@ internal class PapersPagingSource(
                     if (page == 0) {
                         data.entry?.let { entries ->
                             papersDatabase.papersDao()
-                                .replaceAll(entries.map { it.toEntityModel() })
+                                .replaceAll(entries.map { it.toEntityModel(subjectNames) })
                         }
                     }
                     Log.d("HELLO", "AFTER")
@@ -68,17 +80,22 @@ internal class PapersPagingSource(
                     }
 
                     val prevPage = if (page == 0) null else page - 1
-                    LoadResult.Page(
+                    return LoadResult.Page(
                         data = data.entry.mapNotNullEmpty { it.toDomainModel(subjectNames) },
                         prevKey = prevPage,
-                        nextKey = nextPage
+                        nextKey = nextPage,
                     )
                 } catch (ex: HttpException) {
-                    ex.printStackTrace()
-                    LoadResult.Error(ex)
+//                    ex.printStackTrace()
+                    return LoadResult.Error(
+                        GenericNetworkException(
+                            "Something happened to network",
+                            ex
+                        )
+                    )
                 } catch (ex: IOException) {
-                    ex.printStackTrace()
-                    LoadResult.Error(ex)
+//                    ex.printStackTrace()
+                    return LoadResult.Error(GenericNetworkException("Something went wrong", ex))
                 }
             }
         }

@@ -21,8 +21,7 @@ enum class BottomNavDestination(
         unselectedIcon = ArxivIcons.PapersInactive,
         titleTextId = papersR.string.feature_papers_title,
         toolbarSecondaryButtons = listOf(ArxivIcons.Filter to MainToolbarAction.FILTERS),
-
-        ),
+    ),
     EXPLORE(
         selectedIcon = ArxivIcons.Explore,
         unselectedIcon = ArxivIcons.Explore,

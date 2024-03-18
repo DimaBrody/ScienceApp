@@ -3,6 +3,7 @@ package com.brody.arxiv.shared.papers.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.brody.arxiv.core.network.util.NetworkMonitor
 import com.brody.arxiv.shared.papers.data.PapersPagingSource
 import com.brody.arxiv.shared.papers.data.database.PapersDatabase
 import com.brody.arxiv.shared.papers.data.remote.source.PapersRemoteDataSource
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 internal class PapersRepositoryImpl @Inject constructor(
     private val papersDatabase: PapersDatabase,
-    private val papersRemoteDataSource: PapersRemoteDataSource
+    private val papersRemoteDataSource: PapersRemoteDataSource,
+    private val networkMonitor: NetworkMonitor
 ) : PapersRepository {
 
     private val papersRemotePagingConfig = PagingConfig(
@@ -28,7 +30,13 @@ internal class PapersRepositoryImpl @Inject constructor(
         subjectNames: SubjectNames
     ): Flow<PagingData<PaperDomainModel>> =
         Pager(papersRemotePagingConfig) {
-            PapersPagingSource(papersDatabase, papersRemoteDataSource, query, subjectNames)
+            PapersPagingSource(
+                papersDatabase = papersDatabase,
+                papersDataSource = papersRemoteDataSource,
+                networkMonitor = networkMonitor,
+                query = query,
+                subjectNames = subjectNames
+            )
         }.flow
 
 

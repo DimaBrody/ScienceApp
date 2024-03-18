@@ -12,13 +12,13 @@ sealed interface FetchPapers {
             open val prefixParams: List<PrefixParam>?
 
         ) : Remote {
-            class Default(
+            data class Default(
                 override val sortBy: SortBy? = null,
                 override val sortOrder: SortOrder? = null,
                 override val prefixParams: List<PrefixParam>? = null
             ) : Query(sortBy, sortOrder, null, prefixParams)
 
-            class Subjects(
+            data class Subjects(
                 override val sortBy: SortBy? = null,
                 override val sortOrder: SortOrder? = null,
                 override val excludedIds: List<Int>? = null,
@@ -28,6 +28,23 @@ sealed interface FetchPapers {
     }
 
     data object Saved : FetchPapers
+
+
+
+//    fun checkEquals(other: FetchPapers?): Boolean {
+//        return if (other == null) false
+//        else {
+//            when {
+//                other is Remote.Query && this is Remote.Query -> {
+//                    other.excludedIds == this.excludedIds && other.sortBy == this.sortBy
+//                            && other.sortOrder == this.sortOrder &&
+//                            other.prefixParams == this.prefixParams
+//                }
+//
+//                else -> (other == this)
+//            }
+//        }
+//    }
 }
 
 fun FetchPapers.toDomainRequest(): FetchPapersDomain {

@@ -1,10 +1,10 @@
 package com.brody.arxiv.designsystem.theme
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 // Set of Material typography styles to start with
@@ -21,11 +21,11 @@ val Typography = Typography(
     // #OnBoarding under Search text
     bodyMedium = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 20.sp,
-        letterSpacing = 0.5.sp,
-        color = OnSurface60
+        letterSpacing = 0.25.sp,
+        color = OnSurfaceVariant
     ),
 
     // Paper item text
@@ -68,18 +68,24 @@ val Typography = Typography(
     )
 )
 
-val OnboardingTitleLarge = Typography.titleLarge.copy(
+val OnboardingTitleLargeTheme = Typography.titleLarge.copy(
     fontWeight = FontWeight.Medium,
     fontSize = 22.sp,
     color = OnPrimaryContainer
 )
 
-val OnboardingSmall = Typography.bodyLarge.copy(
+val OnboardingSmallTheme = Typography.bodyLarge.copy(
     lineHeight = 24.sp,
     color = OnSurface60
 )
 
-val FilterTitleText = Typography.bodyLarge.copy(
+val OnboardingUnderSearchTheme = Typography.bodyMedium.copy(
+    color = OnSurface60,
     fontWeight = FontWeight.Medium,
-    color = OnSurface40
+    letterSpacing = (0.1).sp
+)
+
+val FilterTitleTextTheme = Typography.bodyLarge.copy(
+    fontWeight = FontWeight.Medium,
+    color = OnSurface40,
 )

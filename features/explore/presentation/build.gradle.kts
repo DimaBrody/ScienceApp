@@ -7,5 +7,6 @@ android {
 }
 
 dependencies {
-
+    implementation(projects.shared.subjects.presentation)
+    implementation(projects.shared.search.models.presentation)
 }

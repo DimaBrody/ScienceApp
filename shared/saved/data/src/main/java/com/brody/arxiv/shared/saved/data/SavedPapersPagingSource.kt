@@ -2,6 +2,8 @@ package com.brody.arxiv.shared.saved.data
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.brody.arxiv.core.common.exceptions.GenericNetworkException
+import com.brody.arxiv.core.common.exceptions.NoSavedException
 import com.brody.arxiv.shared.papers.models.domain.PaperDomainModel
 import com.brody.arxiv.shared.saved.data.database.SavedPapersDatabase
 import com.brody.arxiv.shared.saved.models.data.toDomainModel
@@ -23,6 +25,9 @@ internal class SavedPapersPagingSource(
         return try {
             val data = savedDatabase.papersDao()
                 .getSavedPaperEntities().first().map { it.toDomainModel() }
+
+            if (data.isEmpty())
+                return LoadResult.Error(NoSavedException())
 
             LoadResult.Page(
                 data = data, prevKey = null, nextKey = null

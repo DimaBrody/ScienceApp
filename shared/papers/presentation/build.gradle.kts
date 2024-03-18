@@ -18,5 +18,4 @@ dependencies {
     implementation(project(":shared:papers:models:domain"))
     implementation(project(":shared:papers:models:presentation"))
     implementation(project(":shared:subjects:models:domain"))
-    
 }

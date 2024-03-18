@@ -14,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.brody.arxiv.designsystem.extensions.scrollTo
 import com.brody.arxiv.designsystem.theme.ArxivTheme
 import com.brody.arxiv.shared.subjects.models.presentation.SubjectChipData
+import com.brody.arxiv.shared.subjects.presentation.ui.list.HandleBottomSheet
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
@@ -23,8 +24,10 @@ internal fun OnboardingRoute(
 ) {
     OnboardingScreen(
         onSubjectChipsUpdated = viewModel::onSelectedSubjectsUpdated,
-        onCurrentSelectedSubjects = viewModel.onCurrentSelectedSubjects,
-        onCompleteClick = onCompleteClick,
+        onCompleteClick = {
+            viewModel.updateActive { onCompleteClick() }
+        },
+        onGetCurrentChips = viewModel.onCurrentSelectedSubjects,
         updatedSubjects = viewModel.onUpdatedSubjects,
     )
 }
@@ -33,8 +36,8 @@ internal fun OnboardingRoute(
 @Composable
 private fun OnboardingScreen(
     onSubjectChipsUpdated: (List<SubjectChipData>) -> Unit,
-    onCurrentSelectedSubjects: () -> List<Int>,
     onCompleteClick: () -> Unit,
+    onGetCurrentChips: () -> List<Int>,
     updatedSubjects: () -> MutableState<ImmutableList<SubjectChipData>?>,
 ) {
     val pagerState = rememberPagerState(pageCount = { 2 })
@@ -52,14 +55,16 @@ private fun OnboardingScreen(
 
             1 -> SubjectsPage(
                 onSubjectChipsUpdated = onSubjectChipsUpdated,
-                onCurrentSelectedSubjects = onCurrentSelectedSubjects,
                 onCompleteClick = onCompleteClick,
+                onGetCurrentChips = onGetCurrentChips,
                 updatedSubjects = updatedSubjects,
             ) {
                 pagerState.scrollTo(coroutineScope, 0)
             }
         }
     }
+
+    HandleBottomSheet()
 }
 
 @Preview(backgroundColor = 0xFFFFFFFF)

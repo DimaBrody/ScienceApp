@@ -84,6 +84,11 @@ dependencies {
 
     implementation(project(":shared:subjects:domain"))
     implementation(project(":shared:subjects:models:domain"))
+    implementation(projects.shared.saved.models.domain)
+
+    implementation(project(":shared:search:presentation"))
+    implementation(project(":shared:subjects:presentation"))
+    implementation(project(":shared:search:models:presentation"))
 
     // DATA
     implementation(project(":shared:subjects:data"))

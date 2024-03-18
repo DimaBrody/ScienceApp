@@ -1,10 +1,10 @@
-package com.brody.arxiv.shared.search.presentation.ui
+package com.brody.arxiv.shared.subjects.presentation.ui.list
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,9 +21,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,9 +30,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.SearchBarDefaults.InputFieldHeight
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TriStateCheckbox
@@ -43,6 +38,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -52,128 +48,76 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.brody.arxiv.core.common.models.LinkBits
-import com.brody.arxiv.designsystem.dimens.Dimens.zeroDp
-import com.brody.arxiv.designsystem.animations.animateDpAsStateNoLabel
 import com.brody.arxiv.designsystem.dimens.Dimens
 import com.brody.arxiv.designsystem.extensions.scrollTo
 import com.brody.arxiv.designsystem.theme.ArxivTheme
 import com.brody.arxiv.designsystem.theme.OnSurface
 import com.brody.arxiv.designsystem.theme.OnSurfaceVariant
-import com.brody.arxiv.designsystem.theme.OnboardingSmall
+import com.brody.arxiv.designsystem.theme.OnboardingSmallTheme
 import com.brody.arxiv.designsystem.theme.Primary
 import com.brody.arxiv.designsystem.ui.icons.ArxivIcons
-import com.brody.arxiv.shared.search.models.presentation.SearchCategoriesNode
-import com.brody.arxiv.shared.search.models.presentation.findNodeByBits
-import com.brody.arxiv.shared.search.presentation.R
-import com.brody.arxiv.shared.search.presentation.dimens.SearchDimens
-import com.brody.arxiv.shared.search.presentation.dimens.SearchDimens.ActiveSearchPadding
-import com.brody.arxiv.shared.search.presentation.dimens.SearchDimens.InactiveSearchPadding
+import com.brody.arxiv.shared.search.models.presentation.SearchState
 import com.brody.arxiv.shared.subjects.models.domain.SubjectType
+import com.brody.arxiv.shared.subjects.models.presentation.CategoriesNodeUiModel
+import com.brody.arxiv.shared.subjects.models.presentation.findNodeByBits
+import com.brody.arxiv.shared.subjects.presentation.dimens.SubjectsDimens
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.StateFlow
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SearchBarSubjects(
-    onCurrentSelectedSubjects: () -> List<Int>,
-    viewModel: SearchViewModel = hiltViewModel(),
+fun SubjectsList(
+    searchFlow: StateFlow<SearchState>,
+    onGetCurrentChips: (() -> List<Int>)? = null,
+    isAlwaysActive: Boolean = false,
+    isSearchActive: Boolean? = null,
+    viewModel: SubjectsViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.subjectsState.collectAsStateWithLifecycle()
-    val bottomSheetState by viewModel.sheetUiState.collectAsStateWithLifecycle()
-    val pagerState = rememberPagerState(pageCount = { 3 })
+    Log.d("HELLOLIST", "VM: $viewModel")
+
+    viewModel.setOnGetCurrentChips(onGetCurrentChips)
+
+    val uiState by viewModel.getSubjectsState(searchFlow, isAlwaysActive)
+        .collectAsStateWithLifecycle()
+
+    val pagerState = rememberPagerState(viewModel.pagerState)
     val coroutineScope = rememberCoroutineScope()
 
-    Box {
-        CustomSearchBar(
-            viewModel, pagerState, uiState, coroutineScope, onCurrentSelectedSubjects
-        )
-        HandlePagerExpanded(viewModel, pagerState, coroutineScope)
+    LaunchedEffect(isSearchActive) {
+        if (isSearchActive == true)
+            viewModel.setUpdateRequired(true)
     }
 
-    HandleBottomSheet(bottomSheetState, viewModel::dismissBottomSheet)
+//    HandlePagerExpanded(viewModel, pagerState, coroutineScope)
+
+    PagerWithSearchedItems(
+        uiState = uiState,
+        pagerState = pagerState,
+        coroutineScope = coroutineScope,
+        isAlwaysActive = isAlwaysActive,
+        onPagerChanged = viewModel::updatePagerExpanded,
+        onSelectionToggle = viewModel::toggleSelection,
+        openBottomSheetDialog = viewModel::openBottomSheet,
+    ) { pagerState.scrollTo(coroutineScope, 0, false) }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun CustomSearchBar(
-    viewModel: SearchViewModel,
-    pagerState: PagerState,
-    uiState: SearchSubjectsUiState,
-    coroutineScope: CoroutineScope,
-    onCurrentSelectedSubjects: () -> List<Int>
-) {
-    val searchText = stringResource(R.string.search)
-    val searchIconText = stringResource(R.string.search_icon)
-    val closeIconText = stringResource(R.string.close_icon)
-
-    val animatedPadding by animateDpAsStateNoLabel(
-        targetValue = if (viewModel.isSearchActive) InactiveSearchPadding else ActiveSearchPadding,
-    )
-
-    SearchBar(
-        query = viewModel.searchQuery,
-        onQueryChange = viewModel::onSearchQueryChange,
-        onSearch = {
-            viewModel.updateActive(false)
-        },
-        active = viewModel.isSearchActive,
-        onActiveChange = { isActive ->
-            viewModel.updateActive(isActive, onCurrentSelectedSubjects())
-        },
-        enabled = viewModel.pagerExpandedTitle.isNullOrEmpty(),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = animatedPadding, end = animatedPadding, top = animatedPadding / 2
-            ),
-        placeholder = { Text(searchText) },
-        leadingIcon = {
-            Icon(imageVector = ArxivIcons.Search, contentDescription = searchIconText)
-        },
-        trailingIcon = {
-            if (viewModel.isSearchActive) {
-                Icon(
-                    modifier = Modifier.clickable(onClick = viewModel::handleSearchClose),
-                    imageVector = ArxivIcons.Close,
-                    contentDescription = closeIconText
-                )
-            }
-        },
-        tonalElevation = zeroDp,
-        colors = getSearchBarColors()
-    ) {
-        if (uiState is SearchSubjectsUiState.Active) {
-            val uiStateActive = uiState as SearchSubjectsUiState.Active
-            PagerWithSearchedItems(
-                uiState = uiStateActive,
-                pagerState = pagerState,
-                coroutineScope = coroutineScope,
-                onPagerChanged = viewModel::updatePagerExpanded,
-                onSelectionToggle = viewModel::toggleSelection,
-                openBottomSheetDialog = viewModel::openBottomSheet,
-            ) { pagerState.scrollTo(coroutineScope, 0, false) }
-        }
-
-    }
-}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HandlePagerExpanded(
-    viewModel: SearchViewModel, pagerState: PagerState, coroutineScope: CoroutineScope
+    viewModel: SubjectsViewModel = hiltViewModel(),
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val pagerState = rememberPagerState(viewModel.pagerState)
+
     viewModel.pagerExpandedTitle?.let { title ->
         SearchPagerExpanded(title) {
             viewModel.closePagerExpanded(pagerState.currentPage == 1)
@@ -182,22 +126,28 @@ fun HandlePagerExpanded(
     }
 }
 
+
 @Composable
-fun HandleBottomSheet(state: BottomSheetUiState?, onDismiss: () -> Unit) {
-    (state as? BottomSheetUiState.Active)?.let {
-        BottomSheet(it.data, onDismiss)
+fun HandleBottomSheet(
+) {
+    val viewModel: SubjectsViewModel = hiltViewModel()
+    val bottomSheetState by viewModel.sheetUiState.collectAsStateWithLifecycle()
+    Log.d("HELLOBS", "$bottomSheetState, VM: $viewModel")
+    (bottomSheetState as? BottomSheetUiState.Active)?.let {
+        BottomSheet(it.data, viewModel::dismissBottomSheet)
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PagerWithSearchedItems(
-    uiState: SearchSubjectsUiState.Active,
+    uiState: SubjectsUiState,
     pagerState: PagerState,
     coroutineScope: CoroutineScope,
+    isAlwaysActive: Boolean,
     onPagerChanged: (String?) -> Unit,
-    onSelectionToggle: (SearchCategoriesNode) -> Unit,
-    openBottomSheetDialog: ((SearchCategoriesNode) -> Unit)?,
+    onSelectionToggle: (CategoriesNodeUiModel) -> Unit,
+    openBottomSheetDialog: ((CategoriesNodeUiModel) -> Unit)?,
     onPagerDisposed: () -> Unit
 ) {
     var page1Node by rememberSaveable { mutableStateOf<LinkBits?>(null) }
@@ -216,7 +166,9 @@ fun PagerWithSearchedItems(
 
         when (page) {
             0 -> SearchList(
-                searchHierarchy = subjectsHierarchy, onSelectionToggle = onSelectionToggle
+                searchHierarchy = subjectsHierarchy,
+                isAlwaysActive = isAlwaysActive,
+                onSelectionToggle = onSelectionToggle
             ) {
                 onPagerChanged(it.name)
                 page1Node = LinkBits.extractLinkBits(it.link)
@@ -224,7 +176,8 @@ fun PagerWithSearchedItems(
             }
 
             1 -> SearchList(
-                searchHierarchy = subjectsHierarchy.findNodeByBits(page1Node)?.childrenNodes,
+                searchHierarchy = subjectsHierarchy?.findNodeByBits(page1Node)?.childrenNodes,
+                isAlwaysActive = isAlwaysActive,
                 onSelectionToggle = onSelectionToggle,
                 openBottomDialog = openBottomSheetDialog
             ) {
@@ -234,7 +187,8 @@ fun PagerWithSearchedItems(
             }
 
             2 -> SearchList(
-                searchHierarchy = subjectsHierarchy.findNodeByBits(page2Node)?.childrenNodes,
+                searchHierarchy = subjectsHierarchy?.findNodeByBits(page2Node)?.childrenNodes,
+                isAlwaysActive = isAlwaysActive,
                 onSelectionToggle = onSelectionToggle,
                 openBottomDialog = openBottomSheetDialog
             )
@@ -243,17 +197,19 @@ fun PagerWithSearchedItems(
 }
 
 @Composable
-fun SearchList(
-    searchHierarchy: Map<Int, SearchCategoriesNode>?,
-    onSelectionToggle: (SearchCategoriesNode) -> Unit,
-    openBottomDialog: ((SearchCategoriesNode) -> Unit)? = null,
-    onItemClicked: ((SearchCategoriesNode) -> Unit)? = null,
+private fun SearchList(
+    searchHierarchy: Map<Int, CategoriesNodeUiModel>?,
+    isAlwaysActive: Boolean,
+    onSelectionToggle: (CategoriesNodeUiModel) -> Unit,
+    openBottomDialog: ((CategoriesNodeUiModel) -> Unit)? = null,
+    onItemClicked: ((CategoriesNodeUiModel) -> Unit)? = null,
 ) {
     searchHierarchy?.values?.let {
         LazyColumn {
             items(items = it.toList()) { node ->
                 SearchListItem(
                     node = node,
+                    isAlwaysActive = isAlwaysActive,
                     onSelectionToggle = onSelectionToggle,
                     onItemClicked = onItemClicked,
                     openBottomDialog = openBottomDialog
@@ -264,11 +220,12 @@ fun SearchList(
 }
 
 @Composable
-fun SearchListItem(
-    node: SearchCategoriesNode,
-    onSelectionToggle: (SearchCategoriesNode) -> Unit,
-    onItemClicked: ((SearchCategoriesNode) -> Unit)?,
-    openBottomDialog: ((SearchCategoriesNode) -> Unit)?
+private fun SearchListItem(
+    node: CategoriesNodeUiModel,
+    isAlwaysActive: Boolean,
+    onSelectionToggle: (CategoriesNodeUiModel) -> Unit,
+    onItemClicked: ((CategoriesNodeUiModel) -> Unit)?,
+    openBottomDialog: ((CategoriesNodeUiModel) -> Unit)?
 ) {
     val childCount = node.childCount
 
@@ -283,8 +240,7 @@ fun SearchListItem(
         headlineContent = { Text(node.name, color = MaterialTheme.colorScheme.onSurfaceVariant) },
         trailingContent = {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.alpha(0.9f)
+                verticalAlignment = Alignment.CenterVertically, modifier = Modifier.alpha(0.9f)
             ) {
                 CompositionLocalProvider(LocalContentColor provides OnSurfaceVariant) {
                     if (node.type != SubjectType.SUBJECT) {
@@ -299,7 +255,7 @@ fun SearchListItem(
                         Text(
                             node.childCount.toString(),
                             fontWeight = FontWeight.Medium,
-                            fontSize = SearchDimens.countTextSize
+                            fontSize = SubjectsDimens.countTextSize
                         )
                         Spacer(Modifier.width(Dimens.spacingTiny))
                         Icon(
@@ -320,14 +276,26 @@ fun SearchListItem(
             )
         },
         colors = ListItemDefaults.colors(
-            headlineColor = OnSurface
+            headlineColor = OnSurface,
+            containerColor = if (isAlwaysActive)
+                MaterialTheme.colorScheme.background
+            else MaterialTheme.colorScheme.surface
         )
     )
 }
 
+@Composable
+fun rememberPagerState(
+    pagerState: SubjectsPagerState
+): SubjectsPagerState {
+    return rememberSaveable(saver = SubjectsPagerState.Saver) {
+        pagerState
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheet(data: BottomSheetData, onDismiss: () -> Unit) {
+private fun BottomSheet(data: BottomSheetData, onDismiss: () -> Unit) {
     val modalBottomSheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
@@ -341,10 +309,10 @@ fun BottomSheet(data: BottomSheetData, onDismiss: () -> Unit) {
 }
 
 @Composable
-fun ModalSheetContent(data: BottomSheetData) {
+private fun ModalSheetContent(data: BottomSheetData) {
     Column(
         verticalArrangement = Arrangement.spacedBy(Dimens.spacingNormal),
-        modifier = Modifier.padding(SearchDimens.bsContentPaddings)
+        modifier = androidx.compose.ui.Modifier.padding(SubjectsDimens.bsContentPaddings)
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(Dimens.spacingSmall),
@@ -358,19 +326,19 @@ fun ModalSheetContent(data: BottomSheetData) {
             Text(
                 text = "(${data.id})",
                 style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(top = SearchDimens.bsSmallText)
+                modifier = Modifier.padding(top = SubjectsDimens.bsSmallText)
             )
         }
         Text(
             text = data.desc,
-            style = OnboardingSmall,
+            style = OnboardingSmallTheme,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
 
 @Composable
-fun SearchPagerExpanded(
+private fun SearchPagerExpanded(
     title: String, onBackPressed: () -> Unit
 ) {
 
@@ -380,18 +348,18 @@ fun SearchPagerExpanded(
     BackHandler(onBack = onBackPressed)
     Surface(
         modifier = Modifier
-            .zIndex(2f)
+            .zIndex(4f)
             .padding(
                 top = insects
                     .asPaddingValues(density)
-                    .calculateTopPadding() + SearchDimens.searchBarVerticalPadding
+                    .calculateTopPadding() + SubjectsDimens.searchBarVerticalPadding
             ),
         color = MaterialTheme.colorScheme.secondaryContainer,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(InputFieldHeight),
+                .height(SearchBarDefaults.InputFieldHeight),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBackPressed) {
@@ -407,7 +375,7 @@ fun SearchPagerExpanded(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
                 modifier = Modifier.padding(
-                    end = SearchDimens.searchTitleTextPaddingEnd
+                    end = SubjectsDimens.searchTitleTextPaddingEnd
                 )
             )
         }
@@ -419,7 +387,7 @@ fun SearchPagerExpanded(
     widthDp = 320, heightDp = 240, backgroundColor = 0xFFFFF4F3
 )
 @Composable
-fun SearchItemPreview() {
+private fun SearchItemPreview() {
     val data = BottomSheetData("Biomoleculsdafsfdasdfsafdsaes", "q-bio.BM", "How are you doing?")
 
     ArxivTheme {
@@ -427,7 +395,7 @@ fun SearchItemPreview() {
 //            ModalSheetContent(data = data)
             SearchPagerExpanded("Physasdfasfadsfsdafasdasdfics") {}
 //            SearchListItem(
-//                node = SearchCategoriesNode(
+//                node = CategoriesNodeUiModel(
 //                    "ai.num",
 //                    0,
 //                    0,

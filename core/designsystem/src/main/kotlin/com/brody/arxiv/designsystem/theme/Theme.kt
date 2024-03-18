@@ -37,6 +37,7 @@ private val LightColorScheme = lightColorScheme(
     outlineVariant = OutlineVariant,
     secondaryContainer = SecondarySurface,
     onSecondaryContainer = OnSurface,
+    outline = Outline,
 
     primaryContainer = PrimaryContainer,
     onPrimaryContainer = OnPrimaryContainer

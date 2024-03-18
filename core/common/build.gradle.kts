@@ -12,5 +12,5 @@ android {
 }
 
 dependencies {
-
+    api(libs.kotlinx.collections.immutable)
 }

@@ -2,6 +2,7 @@ package com.brody.arxiv.shared.papers.data.database
 
 import androidx.room.TypeConverter
 import com.brody.arxiv.shared.papers.models.data.Author
+import com.brody.arxiv.shared.papers.models.data.CategoryEntry
 import com.brody.arxiv.shared.papers.models.data.Link
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -14,4 +15,12 @@ class EntryConverter {
 
     @TypeConverter
     fun toStringList(authorString: String): List<String> = json.decodeFromString(authorString)
+
+    @TypeConverter
+    fun fromCategoriesList(categories: List<CategoryEntry>): String =
+        json.encodeToString(categories)
+
+    @TypeConverter
+    fun toCategoriesList(categoriesString: String): List<CategoryEntry> =
+        json.decodeFromString(categoriesString)
 }

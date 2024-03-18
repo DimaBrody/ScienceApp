@@ -9,4 +9,5 @@ android {
 dependencies {
     implementation(project(":shared:papers:presentation"))
     implementation(project(":shared:papers:models:presentation"))
+    implementation(projects.shared.saved.models.domain)
 }

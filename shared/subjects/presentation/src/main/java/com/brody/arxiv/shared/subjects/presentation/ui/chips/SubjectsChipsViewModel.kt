@@ -1,14 +1,13 @@
-package com.brody.arxiv.shared.subjects.presentation
+package com.brody.arxiv.shared.subjects.presentation.ui.chips
 
-import android.util.Log
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.brody.arxiv.core.common.collections.equalsIgnoreOrder
 import com.brody.arxiv.core.threading.ArxivDispatchers
 import com.brody.arxiv.core.threading.Dispatcher
 import com.brody.arxiv.shared.subjects.domain.usecases.GetSubjectsWithSaved
@@ -17,8 +16,10 @@ import com.brody.arxiv.shared.subjects.models.presentation.SubjectChipData
 import com.brody.arxiv.shared.subjects.models.presentation.SubjectsRequest
 import com.brody.arxiv.shared.subjects.models.presentation.toChipsData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -31,20 +32,22 @@ import kotlinx.coroutines.plus
 import javax.inject.Inject
 
 @HiltViewModel
-class SubjectsViewModel @Inject constructor(
+class SubjectsChipsViewModel @Inject constructor(
     getSubjectsWithSaved: GetSubjectsWithSaved,
     @Dispatcher(ArxivDispatchers.IO) private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-
     private val subjectsFlow = getSubjectsWithSaved()
+
     private var isFirstLoad = true
 
 
     private val subjectMap = hashMapOf<SubjectChipData, Boolean>()
     private var mapSnapshotNumber by mutableIntStateOf(0)
 
-    private val requestValue = MutableStateFlow<SubjectsRequest>(SubjectsRequest.Waiting)
-    private val responseValue: StateFlow<FlowState> =
+    private val requestValue: MutableStateFlow<SubjectsRequest> =
+        MutableStateFlow(SubjectsRequest.Waiting)
+
+    private val responseValue: StateFlow<FlowState> by lazy {
         combine(subjectsFlow, requestValue) { subjects, subjectsRequest ->
             when (subjectsRequest) {
                 is SubjectsRequest.Filters -> {
@@ -62,8 +65,9 @@ class SubjectsViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(5_000),
             FlowState.Ignore
         )
+    }
 
-    var uiState: StateFlow<SubjectsUiState> =
+    val uiState: StateFlow<SubjectsUiState> by lazy {
         merge(
             responseValue,
             snapshotFlow { mapSnapshotNumber }.map { FlowState.Map }
@@ -72,8 +76,8 @@ class SubjectsViewModel @Inject constructor(
                 is FlowState.Subjects -> {
                     subjectMap.clear()
                     subjectMap.putAll(flowState.subjects.data)
-
                     fillOnFirstLoad()
+
                     val output = subjectMap.entries.toList().map { it.toPair() }
 
                     when (flowState.subjects) {
@@ -107,7 +111,7 @@ class SubjectsViewModel @Inject constructor(
         }.map { intermediateState ->
             when (intermediateState) {
                 is SubjectsIntermediateState.FetchedOnboarding -> {
-                    SubjectsUiState.FetchedOnboarding(intermediateState.chips)
+                    SubjectsUiState.FetchedOnboarding(intermediateState.chips.toImmutableList())
                 }
 
                 is SubjectsIntermediateState.FetchedFilters -> {
@@ -134,16 +138,17 @@ class SubjectsViewModel @Inject constructor(
                 else -> SubjectsUiState.Waiting
             }
         }.stateIn(
-            scope = viewModelScope,
+            scope = viewModelScope.plus(coroutineDispatcher),
             initialValue = SubjectsUiState.Waiting,
             started = SharingStarted.WhileSubscribed(5_000)
         )
-        private set
+    }
 
     private fun fillOnFirstLoad() {
         if (isFirstLoad) {
             isFirstLoad = false
-            subjectMap[subjectMap.keys.first()] = true
+            if (requestValue.value is SubjectsRequest.Onboarding)
+                subjectMap[subjectMap.keys.first()] = true
         }
     }
 
@@ -156,6 +161,7 @@ class SubjectsViewModel @Inject constructor(
         mapSnapshotNumber++
     }
 }
+
 
 private sealed interface FlowState {
     data class Subjects(val subjects: ChipsData) : FlowState
@@ -184,9 +190,18 @@ sealed class SubjectsIntermediateState(
 sealed interface SubjectsUiState {
     data object Waiting : SubjectsUiState
 
-    class FetchedOnboarding(val chips: List<Pair<SubjectChipData, Boolean>>) : SubjectsUiState
+    data class FetchedOnboarding(val chips: ImmutableList<Pair<SubjectChipData, Boolean>>) :
+        SubjectsUiState {
+        override fun equals(other: Any?): Boolean {
+            return other is FetchedOnboarding && other.chips.equalsIgnoreOrder(this.chips)
+        }
 
-    class FetchedFilters(
+        override fun hashCode(): Int {
+            return chips.hashCode()
+        }
+    }
+
+    data class FetchedFilters(
         val chips: HashMap<String, MutableList<Pair<SubjectChipData, Boolean>>>,
         val excludedNodes: List<SubjectChipData> = emptyList()
     ) : SubjectsUiState

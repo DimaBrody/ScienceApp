@@ -3,6 +3,9 @@ package com.brody.arxiv.shared.papers.models.domain
 import android.util.Log
 import com.brody.arxiv.shared.subjects.models.domain.SubjectsHierarchy
 
+private const val AND_NOT = "+ANDNOT+"
+private const val OR = "+OR+"
+
 sealed interface RemoteQuery {
 
     data object Offline : RemoteQuery
@@ -17,7 +20,7 @@ sealed interface RemoteQuery {
             var isFirstPrefix = true
 
             val prefixParams: MutableList<PrefixParams> =
-                queryRemote.prefixParams?.map { PrefixParams("+OR+", it.convertToString()) }
+                queryRemote.prefixParams?.map { PrefixParams(OR, it.convertToString()) }
                     ?.toMutableList()
                     ?: mutableListOf()
 
@@ -26,14 +29,18 @@ sealed interface RemoteQuery {
                 val selectedSubjects = ids.first
                 val excludedIdsSubjects = ids.second
 
-                prefixParams.addAll(selectedSubjects.map { PrefixParams("+OR+", it) })
-                prefixParams.addAll(excludedIdsSubjects.map { PrefixParams("+ANDNOT+", it) })
+                prefixParams.addAll(selectedSubjects.map { PrefixParams(OR, it) })
+                prefixParams.addAll(excludedIdsSubjects.map { PrefixParams(AND_NOT, it) })
             }
 
+//            Log.d("HELLOREM", prefixParams.toString())
             prefixParams.let { prefixes ->
                 for (prefix in prefixes) {
+                    if (isFirstPrefix && prefix.selector == AND_NOT)
+                        return@let
                     if (!isFirstPrefix)
                         sb.append(prefix.selector)
+
                     isFirstPrefix = false
 
                     sb.append(prefix.value)

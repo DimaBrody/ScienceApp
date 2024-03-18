@@ -1,7 +1,6 @@
 package com.brody.arxiv.ui
 
 import android.util.Log
-import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,13 +16,21 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.util.trace
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -35,10 +42,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.brody.arxiv.R
+import com.brody.arxiv.core.common.actions.MainToolbarAction
+import com.brody.arxiv.core.common.extensions.toFloat
+import com.brody.arxiv.core.common.typealiases.ScrollListener
 import com.brody.arxiv.designsystem.ui.components.ArxivNavigationBar
 import com.brody.arxiv.designsystem.ui.components.ArxivNavigationBarItem
-import com.brody.arxiv.designsystem.ui.components.ArxivTopAppBar
-import com.brody.arxiv.designsystem.ui.icons.ArxivIcons
+import com.brody.arxiv.designsystem.ui.appbar.ArxivTopAppBar
+import com.brody.arxiv.designsystem.ui.appbar.IgnorantPinnedScrollBehavior
 import com.brody.arxiv.features.explore.presentation.ui.navigation.EXPLORE_ROUTE
 import com.brody.arxiv.features.explore.presentation.ui.navigation.navigateToExplore
 import com.brody.arxiv.features.onboarding.presentation.ui.navigation.ONBOARDING_ROUTE
@@ -46,9 +56,13 @@ import com.brody.arxiv.features.papers.presentation.ui.navigation.PAPERS_ROUTE
 import com.brody.arxiv.features.papers.presentation.ui.navigation.navigateToPapers
 import com.brody.arxiv.features.saved.presentation.ui.navigation.SAVED_ROUTE
 import com.brody.arxiv.features.saved.presentation.ui.navigation.navigateToSaved
-import com.brody.arxiv.features.settings.presentation.ui.navigation.SETTINGS_ROUTE
-import com.brody.arxiv.features.settings.presentation.ui.navigation.navigateToSettings
+import com.brody.arxiv.features.settings.presentation.navigation.SETTINGS_ROUTE
+import com.brody.arxiv.features.settings.presentation.navigation.navigateToSettings
 import com.brody.arxiv.navigation.BottomNavDestination
+import com.brody.arxiv.shared.search.presentation.ui.ExploreSearchBar
+import com.brody.arxiv.shared.subjects.presentation.ui.list.HandleBottomSheet
+import com.brody.arxiv.shared.subjects.presentation.ui.list.HandlePagerExpanded
+import kotlinx.coroutines.launch
 
 
 const val MAIN_ROUTE = "main_route"
@@ -59,18 +73,25 @@ fun NavController.navigateToMain() = navigate(MAIN_ROUTE) {
 }
 
 fun NavGraphBuilder.mainScreen(
-    appState: ArxivAppState, onNavGraph: NavGraphBuilder.() -> Unit
+    appState: ArxivAppState,
+    viewModelStoreOwner: ViewModelStoreOwner?,
+    lifecycleOwner: LifecycleOwner?,
+    onNavGraph: NavGraphBuilder.(ScrollListener) -> Unit,
 ) {
     composable(route = MAIN_ROUTE) {
-        MainScreen(appState = appState) {
-            onNavGraph()
+        MainScreen(
+            appState = appState,
+        ) { scrollListener ->
+            onNavGraph(scrollListener)
         }
+        HandleBottomSheet()
     }
 }
 
 @Composable
 fun MainScreen(
-    appState: ArxivAppState, onNavGraph: NavGraphBuilder.() -> Unit
+    appState: ArxivAppState,
+    onNavGraph: NavGraphBuilder.(ScrollListener) -> Unit
 ) {
     val navController = rememberNavController()
 
@@ -85,7 +106,25 @@ fun MainScreen(
         else -> null
     }
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
+    val scrollState = rememberTopAppBarState()
+    val scrollBehavior = IgnorantPinnedScrollBehavior(scrollState)
+    val isSearchEnabled by appState.isSearchEnabledFlow.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        launch {
+            appState.topAppBarOverlapFlow.collect {
+                scrollState.contentOffset = (-10) * it.toFloat()
+            }
+        }
+        launch {
+            appState.topAppBarActionsFlow.collect {
+                if (it == MainToolbarAction.SEARCH) {
+                    appState.updateSearchEnabled(true)
+                }
+            }
+        }
+    }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -101,6 +140,10 @@ fun MainScreen(
             }
         },
         topBar = {
+            val isExplore = currentBottomNavDestination == BottomNavDestination.EXPLORE
+            if (!isExplore) appState.updateSearchEnabled(false)
+
+            Log.d("HELLOW", "WTF $isExplore")
             if (currentBottomNavDestination != null) {
                 ArxivTopAppBar(
                     titleRes = currentBottomNavDestination.titleTextId,
@@ -118,6 +161,16 @@ fun MainScreen(
                     onNavigationClick = { navController.popBackStack() },
                     scrollBehavior = scrollBehavior
                 )
+
+                if (isSearchEnabled) {
+                    ExploreSearchBar(
+                        onSearchState = appState::onConnectToSearchFlow
+                    )
+                }
+
+                if (isExplore) {
+                    HandlePagerExpanded()
+                }
             }
         },
     ) { padding ->
@@ -132,6 +185,10 @@ fun MainScreen(
                     ),
                 ),
         ) {
+//            CompositionLocalProvider(
+//                LocalViewModelStoreOwner provides viewModelStoreOwner!!,
+//                LocalLifecycleOwner provides lifecycleOwner!!
+//            ) {
             NavHost(navController = navController,
                 startDestination = PAPERS_ROUTE,
                 enterTransition = {
@@ -146,11 +203,15 @@ fun MainScreen(
                 popExitTransition = {
                     fadeOut(tween(150))
                 }) {
-                onNavGraph()
+                onNavGraph(appState::onScrollListener)
             }
+
+//            }
+
         }
     }
 }
+
 
 @Composable
 private fun ArxivBottomBar(

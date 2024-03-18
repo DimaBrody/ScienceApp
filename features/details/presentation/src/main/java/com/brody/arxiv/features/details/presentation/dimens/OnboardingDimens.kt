@@ -1,4 +1,4 @@
-package com.brody.arxiv.onboarding.presentation.dimens
+package com.brody.arxiv.features.details.presentation.dimens
 
 import androidx.compose.ui.unit.dp
 

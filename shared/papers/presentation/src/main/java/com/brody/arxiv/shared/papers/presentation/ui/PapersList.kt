@@ -1,19 +1,24 @@
 package com.brody.arxiv.shared.papers.presentation.ui
 
-import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,10 +27,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,114 +43,241 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.CombinedLoadStates
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.brody.arxiv.core.common.exceptions.NoSavedException
+import com.brody.arxiv.core.common.exceptions.OfflineException
+import com.brody.arxiv.core.common.typealiases.ScrollListener
 import com.brody.arxiv.designsystem.theme.ArxivTheme
 import com.brody.arxiv.designsystem.theme.OnSurface60
 import com.brody.arxiv.designsystem.theme.OnSurfaceVariant
+import com.brody.arxiv.designsystem.ui.button.PrimaryButton
 import com.brody.arxiv.designsystem.ui.icons.ArxivIcons
+import com.brody.arxiv.designsystem.ui.list.composableScrollListener
+import com.brody.arxiv.designsystem.ui.refresh.ArxivRefresh
 import com.brody.arxiv.designsystem.ui.shimmer.shimmerEffect
 import com.brody.arxiv.shared.papers.models.presentation.FetchPapers
+import com.brody.arxiv.shared.papers.models.presentation.PaperUiCategory
 import com.brody.arxiv.shared.papers.models.presentation.PaperUiModel
+import com.brody.arxiv.shared.papers.presentation.R
+import com.brody.arxiv.shared.saved.models.domain.OnPaperClicked
+import com.brody.arxiv.shared.saved.models.domain.toSaveableModel
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun PapersList(
-    fetchPapers: FetchPapers
+    fetchPapers: FetchPapers,
+    onPaperClicked: OnPaperClicked,
+    onScrollListener: ScrollListener? = null,
+    onOffline: ((Boolean) -> Unit)? = null,
 ) {
     val isShimmerRequired = fetchPapers !is FetchPapers.Saved
-    PapersListInternal(fetchPapers, isShimmerRequired)
+            && fetchPapers !is FetchPapers.Remote.Offline
+
+    PapersListInternal(
+        fetchPapers = fetchPapers,
+        onPaperClicked = onPaperClicked,
+        isShimmerRequired = isShimmerRequired,
+        onScrollListener = { onScrollListener?.invoke(it) },
+        onOffline = onOffline
+    )
 }
 
 @Composable
 private fun PapersListInternal(
     fetchPapers: FetchPapers,
     isShimmerRequired: Boolean,
+    onPaperClicked: OnPaperClicked,
+    onScrollListener: ScrollListener,
+    onOffline: ((Boolean) -> Unit)? = null,
     papersViewModel: PapersViewModel = hiltViewModel()
 ) {
-    papersViewModel.getPapers(fetchPapers)
+    LaunchedEffect(fetchPapers) {
+        papersViewModel.getPapers(fetchPapers)
+    }
 
     PapersPagingList(
         isShimmerRequired = isShimmerRequired,
         state = papersViewModel.uiState,
+        onPaperClicked = onPaperClicked,
+        onScrollListener = onScrollListener,
+        onOffline = onOffline,
         saveItem = papersViewModel::saveItem
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun PapersPagingList(
     isShimmerRequired: Boolean = true,
     state: () -> StateFlow<PapersUiState>,
-    saveItem: (String, PaperUiModel?) -> Unit
+    onPaperClicked: OnPaperClicked,
+    onScrollListener: ScrollListener,
+    onOffline: ((Boolean) -> Unit)? = null,
+    saveItem: (String, PaperUiModel?) -> Unit,
 ) {
     val uiState by state().collectAsStateWithLifecycle()
 
     val uiConnectedState = uiState as? PapersUiState.Connected
 
     uiConnectedState?.let { connectedState ->
-        val pagingItems = connectedState.pagingData.collectAsLazyPagingItems()
-        val hasItems = pagingItems.itemCount > 0
-
-        LazyColumn(userScrollEnabled = hasItems) {
-            if (hasItems) {
-                items(
-                    count = pagingItems.itemCount,
-                    key = pagingItems.itemKey { it.id },
-//                contentType = pagingItems.itemContentType {}
-                ) { index ->
-                    val item = pagingItems[index]
-                    item?.let {
-                        PapersItem(paper = it, saveItem)
-                        HorizontalDivider(
-                            color = MaterialTheme.colorScheme.outlineVariant,
-                            modifier = Modifier.padding(vertical = 12.dp)
-                        )
-                    }
-                }
-            } else {
-                items(if (isShimmerRequired) 5 else 0, { it }) {
-                    Column(Modifier.padding(16.dp, 12.dp)) {
-                        Spacer(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(50.dp)
-                                .clip(RoundedCornerShape(6.dp))
-                                .shimmerEffect()
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Spacer(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(82.dp)
-                                .clip(RoundedCornerShape(6.dp))
-                                .shimmerEffect()
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Spacer(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(20.dp)
-                                .clip(RoundedCornerShape(6.dp))
-                                .shimmerEffect()
-                        )
-                        Spacer(modifier = Modifier.height(24.dp))
-                    }
-
-                }
-            }
-
-
+        Box(Modifier.fillMaxSize()) {
+            val pagingItems = connectedState.pagingData.collectAsLazyPagingItems()
+//            val hasItems = pagingItems.itemCount > 0
+            // refresh, then append
             val loadState = pagingItems.loadState
-            Log.d("HELLO", loadState.toString())
 
+            var isRefreshing by rememberSaveable { mutableStateOf(false) }
+            val refreshState = rememberPullRefreshState(
+                refreshing = isRefreshing,
+                onRefresh = {
+                    onOffline?.invoke(false)
+                    isRefreshing = true
+                    pagingItems.refresh()
+                },
+            )
+
+            ArxivRefresh(
+                isRefreshing = isRefreshing, refreshState = refreshState
+            )
+
+//            val connection = remember {
+//                object : NestedScrollConnection {
+//                    override fun onPreScroll(
+//                        available: Offset,
+//                        source: NestedScrollSource
+//                    ): Offset {
+//                        return super.onPreScroll(available, source)
+//                    }
+//                }
+//            }
+
+
+            val scrollListener = composableScrollListener(onScrollListener)
+
+            LazyColumn(
+                userScrollEnabled = loadState.refresh != LoadState.Loading,
+                modifier = Modifier
+                    .pullRefresh(refreshState)
+                    .fillMaxSize(),
+                state = scrollListener
+            ) {
+                if (loadState.refresh is LoadState.Error || loadState.append is LoadState.Error) {
+                    isRefreshing = false
+                    item {
+                        ErrorScreen(
+                            loadState = loadState,
+                            pagingItems = pagingItems,
+                            onOffline = onOffline
+                        )
+                    }
+                } else {
+                    if (loadState.refresh != LoadState.Loading) {
+                        isRefreshing = false
+                        if (pagingItems.itemCount > 0) {
+                            items(
+                                count = pagingItems.itemCount,
+                                key = pagingItems.itemKey { it.id },
+//                contentType = pagingItems.itemContentType {}
+                            ) { index ->
+                                val item = pagingItems[index]
+                                item?.let {
+                                    PapersItem(
+                                        paper = it,
+                                        saveItem = saveItem,
+                                        onPaperClicked = onPaperClicked
+                                    )
+                                    HorizontalDivider(
+                                        color = MaterialTheme.colorScheme.outlineVariant,
+                                        modifier = Modifier.padding(vertical = 12.dp)
+                                    )
+                                }
+                            }
+                        } else {
+                            item {
+                                Box(
+                                    modifier = Modifier.fillParentMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "There are no items",
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                }
+                            }
+                        }
+
+                    } else {
+                        items(if (isShimmerRequired) 5 else 0, { it }) {
+                            ShimmerList()
+                        }
+                    }
+                }
+
+//                Log.d("HELLO", loadState.toString())
+            }
         }
     }
-
 }
 
 @Composable
-private fun PapersItem(paper: PaperUiModel, saveItem: (String, PaperUiModel?) -> Unit) {
-    Column {
+private fun LazyItemScope.ErrorScreen(
+    loadState: CombinedLoadStates,
+    pagingItems: LazyPagingItems<PaperUiModel>,
+    onOffline: ((Boolean) -> Unit)? = null,
+) {
+    val error = if (loadState.append is LoadState.Error)
+        (loadState.append as LoadState.Error).error
+    else (loadState.refresh as LoadState.Error).error
+
+    Column(
+        modifier = Modifier.fillParentMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(
+            16.dp, Alignment.CenterVertically
+        ),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val text = error.message ?: "Something wrong"
+        Text(text = text, style = MaterialTheme.typography.bodyLarge)
+
+        when (error) {
+            is OfflineException -> {
+                PrimaryButton(
+                    text = stringResource(R.string.load_offline),
+                    onClick = { onOffline?.invoke(true) }
+                )
+            }
+
+            is NoSavedException -> {
+//                PrimaryButton(
+//                    text = stringResource(R.string.load_reload),
+//                ) { pagingItems.retry() }
+            }
+
+            else -> {
+                PrimaryButton(
+                    text = stringResource(R.string.load_retry),
+                    onClick = { pagingItems.retry() }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PapersItem(
+    paper: PaperUiModel,
+    saveItem: (String, PaperUiModel?) -> Unit,
+    onPaperClicked: OnPaperClicked
+) {
+    Column(
+        Modifier.clickable(
+            onClick = { onPaperClicked(paper.toSaveableModel()) }
+        )
+    ) {
         Row(
             Modifier.padding(top = 4.dp, end = 8.dp)
         ) {
@@ -193,8 +330,8 @@ private fun PapersItem(paper: PaperUiModel, saveItem: (String, PaperUiModel?) ->
                     text = paper.updated,
                     style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.1.sp)
                 )
-                val category = paper.category
-                if(category.isNotEmpty()){
+                val category = paper.primaryCategory
+                if (category != null) {
                     Box(Modifier.padding(bottom = 0.5.dp)) {
                         Spacer(
                             Modifier
@@ -203,7 +340,7 @@ private fun PapersItem(paper: PaperUiModel, saveItem: (String, PaperUiModel?) ->
                         )
                     }
                     Text(
-                        text = category,
+                        text = category.categoryName,
                         style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.1.sp),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -215,6 +352,35 @@ private fun PapersItem(paper: PaperUiModel, saveItem: (String, PaperUiModel?) ->
     }
 }
 
+@Composable
+private fun ShimmerList() {
+    Column(Modifier.padding(16.dp, 12.dp)) {
+        Spacer(
+            Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .shimmerEffect()
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(
+            Modifier
+                .fillMaxWidth()
+                .height(82.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .shimmerEffect()
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(
+            Modifier
+                .fillMaxWidth()
+                .height(20.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .shimmerEffect()
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+    }
+}
 
 @Composable
 @Preview(
@@ -236,9 +402,8 @@ private fun PapersPreview() {
                 links = listOf(),
                 comment = "Hello",
                 isSaved = true,
-                categoryId = "sss",
-                category = "Astronomics"
-            )
-        ) { _, _ -> }
+                categories = listOf(PaperUiCategory("Astronomics", ""))
+            ), onPaperClicked = { }, saveItem = { _, _ -> }
+        )
     }
 }

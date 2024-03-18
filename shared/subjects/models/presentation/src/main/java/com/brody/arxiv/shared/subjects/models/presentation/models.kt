@@ -1,5 +1,6 @@
 package com.brody.arxiv.shared.subjects.models.presentation
 
+import android.util.Log
 import com.brody.arxiv.core.common.models.LinkBits
 import com.brody.arxiv.shared.subjects.models.domain.CategoriesNode
 import com.brody.arxiv.shared.subjects.models.domain.SelectedType
@@ -95,5 +96,4 @@ private fun createSubjectChipItem(
         node.name,
         LinkBits.extractLinkBits(node.createIntLink())
     ) to (excludedIds?.contains(node.createIntLink())?.not() ?: isSelected)
-
 

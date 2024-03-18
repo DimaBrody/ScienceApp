@@ -8,9 +8,11 @@ import com.brody.arxiv.core.threading.ApplicationScope
 import com.brody.arxiv.core.threading.ArxivDispatchers
 import com.brody.arxiv.core.threading.Dispatcher
 import com.brody.arxiv.shared.settings.data.QueryPreferences
+import com.brody.arxiv.shared.settings.data.SettingsPreferences
 import com.brody.arxiv.shared.settings.serializers.QueryPreferencesSerializer
 import com.brody.arxiv.shared.settings.domain.repository.SettingsRepository
 import com.brody.arxiv.shared.settings.repository.SettingsRepositoryImpl
+import com.brody.arxiv.shared.settings.serializers.DefaultPreferencesSerializer
 import com.brody.arxiv.shared.settings.source.SettingsDataSource
 import com.brody.arxiv.shared.settings.source.SettingsDataSourceImpl
 import dagger.Binds
@@ -51,6 +53,21 @@ internal interface SettingsHiltModule {
                 scope = CoroutineScope(scope.coroutineContext + ioDispatcher),
             ) {
                 context.dataStoreFile("query_preferences.pb")
+            }
+
+        @Provides
+        @Singleton
+        internal fun providesSettingsPreferencesDataStore(
+            @ApplicationContext context: Context,
+            @Dispatcher(ArxivDispatchers.IO) ioDispatcher: CoroutineDispatcher,
+            @ApplicationScope scope: CoroutineScope,
+            settingsPreferencesSerializer: DefaultPreferencesSerializer,
+        ): DataStore<SettingsPreferences> =
+            DataStoreFactory.create(
+                serializer = settingsPreferencesSerializer,
+                scope = CoroutineScope(scope.coroutineContext + ioDispatcher),
+            ) {
+                context.dataStoreFile("settings_preferences.pb")
             }
     }
 

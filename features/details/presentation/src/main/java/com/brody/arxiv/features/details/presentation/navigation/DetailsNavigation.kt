@@ -1,31 +1,42 @@
-package com.brody.arxiv.features.details.presentation.ui.navigation
+package com.brody.arxiv.features.details.presentation.navigation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
+import android.net.Uri
 import androidx.compose.material3.Text
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.brody.arxiv.designsystem.animations.ScaleTransitionDirection
 import com.brody.arxiv.designsystem.animations.scaleIntoContainer
 import com.brody.arxiv.designsystem.animations.scaleOutOfContainer
+import com.brody.arxiv.features.details.presentation.DetailsScreen
+import com.brody.arxiv.features.details.presentation.models.toPresentationModel
+import com.brody.arxiv.shared.saved.models.domain.SaveablePaperDataModel
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
-const val DETAILS_ROUTE = "details_route"
+private const val DETAILS_ROUTE = "details_route"
 
-fun NavController.navigateToDetails() = navigate(DETAILS_ROUTE)
+private const val DETAILS_ROUTE_FULL = "$DETAILS_ROUTE/{paperModelJson}"
+
+fun NavController.navigateToDetails(
+    paperModel: SaveablePaperDataModel
+) {
+    val paperModelJson = Json.encodeToString(SaveablePaperDataModel.serializer(), paperModel)
+    val encodedPaperModelJson = Uri.encode(paperModelJson)
+    navigate("$DETAILS_ROUTE/$encodedPaperModelJson") {
+        launchSingleTop = true
+    }
+}
 
 fun NavGraphBuilder.detailsScreen(
-
+    onBackClicked: () -> Unit
 ) {
-    composable(route = DETAILS_ROUTE,
+    composable(route = DETAILS_ROUTE_FULL,
+        arguments = listOf(navArgument("paperModelJson") {
+            type = NavType.StringType
+        }),
         enterTransition = {
 //            when (initialState.destination.route) {
 //                DETAILS_ROUTE ->
@@ -73,8 +84,15 @@ fun NavGraphBuilder.detailsScreen(
 
 //                else -> null
 //            }
-        }) {
-        Text(text = "Details")
+        }) { backStackEntry ->
+
+        val paperModelJson = Uri.decode(backStackEntry.arguments?.getString("paperModelJson"))
+        val paperModel = Json.decodeFromString(SaveablePaperDataModel.serializer(), paperModelJson)
+
+        DetailsScreen(
+            detailsUiModel = paperModel.toPresentationModel(),
+            onBackClicked = onBackClicked
+        )
     }
 }
 

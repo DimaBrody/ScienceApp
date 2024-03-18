@@ -18,8 +18,8 @@ import com.brody.arxiv.shared.papers.models.presentation.toDomainRequest
 import com.brody.arxiv.shared.papers.models.presentation.toPresentationModel
 import com.brody.arxiv.shared.saved.domain.usecases.SavedPapersIdsUseCase
 import com.brody.arxiv.shared.saved.domain.usecases.SavedPapersUseCase
-import com.brody.arxiv.shared.saved.domain.usecases.ToggleSaveItem
-import com.brody.arxiv.shared.saved.models.domain.toSaveModel
+import com.brody.arxiv.shared.saved.domain.usecases.ToggleSaveItemUseCase
+import com.brody.arxiv.shared.saved.models.domain.toSaveableModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -39,7 +38,7 @@ internal class PapersViewModel @Inject constructor(
     private val queryDefault: QueryPapersUseCase,
     private val querySaved: SavedPapersUseCase,
     private val savedPapersIds: SavedPapersIdsUseCase,
-    private val toggleSaveItem: ToggleSaveItem,
+    private val toggleSaveItem: ToggleSaveItemUseCase,
     @Dispatcher(IO) private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -49,7 +48,12 @@ internal class PapersViewModel @Inject constructor(
     val uiState: () -> StateFlow<PapersUiState>
         get() = { _uiState }
 
+    private var latestFetchPapers: FetchPapers? = null
+
     fun getPapers(fetchPapers: FetchPapers) {
+        if (fetchPapers == (latestFetchPapers)) return
+        latestFetchPapers = fetchPapers
+
         viewModelScope.launch(coroutineDispatcher) {
             setLoading()
 
@@ -84,7 +88,7 @@ internal class PapersViewModel @Inject constructor(
 
     fun saveItem(id: String, item: PaperUiModel?) {
         viewModelScope.launch(coroutineDispatcher) {
-            toggleSaveItem.invoke(id, item?.toSaveModel())
+            toggleSaveItem.invoke(id, item?.toSaveableModel())
         }
     }
 

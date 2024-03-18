@@ -8,7 +8,7 @@ import com.brody.arxiv.shared.saved.data.SavedPapersPagingSource
 import com.brody.arxiv.shared.saved.data.database.SavedPapersDatabase
 import com.brody.arxiv.shared.saved.domain.repository.SavedPapersRepository
 import com.brody.arxiv.shared.saved.models.data.toEntityModel
-import com.brody.arxiv.shared.saved.models.domain.SavePaperData
+import com.brody.arxiv.shared.saved.models.domain.SaveablePaperDataModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
@@ -30,7 +30,7 @@ internal class SavedPapersRepositoryImpl @Inject constructor(
         savedPapersDatabase.papersDao().deletePaperById(id)
     }
 
-    override suspend fun insertSaved(savePaperData: SavePaperData) {
+    override suspend fun insertSaved(savePaperData: SaveablePaperDataModel) {
         savedPapersDatabase.papersDao().insertPaper(savePaperData.toEntityModel())
     }
 

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,10 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.brody.arxiv.designsystem.dimens.Dimens
-import com.brody.arxiv.designsystem.theme.OnboardingSmall
-import com.brody.arxiv.designsystem.theme.OnboardingTitleLarge
+import com.brody.arxiv.designsystem.theme.OnboardingSmallTheme
+import com.brody.arxiv.designsystem.theme.OnboardingTitleLargeTheme
 import com.brody.arxiv.designsystem.ui.button.PrimaryButton
 import com.brody.arxiv.features.onboarding.R
 import com.brody.arxiv.designsystem.R as designR
@@ -46,13 +44,13 @@ fun LandingPage(onNextClicked: () -> Unit) {
             Spacer(modifier = Modifier.height(Dimens.spacingExtraLarge))
             Text(
                 titleText,
-                style = OnboardingTitleLarge,
+                style = OnboardingTitleLargeTheme,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(Dimens.spacingBig))
             Text(
                 subtitleText,
-                style = OnboardingSmall,
+                style = OnboardingSmallTheme,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(Dimens.spacingExtraLarge))

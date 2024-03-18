@@ -4,8 +4,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.brody.arxiv.core.common.extensions.convertDateDefault
 import com.brody.arxiv.shared.papers.models.domain.DomainAuthor
+import com.brody.arxiv.shared.papers.models.domain.DomainCategory
 import com.brody.arxiv.shared.papers.models.domain.DomainLink
 import com.brody.arxiv.shared.papers.models.domain.PaperDomainModel
+import kotlinx.serialization.Serializable
 
 @Entity(tableName = "offline_papers")
 data class PaperEntity(
@@ -19,10 +21,16 @@ data class PaperEntity(
     val doi: String?,
     val links: List<String>?,
     val comment: String?,
-    val category: String?,
+    val categories: List<CategoryEntry>?,
 )
 
-fun PaperEntity.toDomainModel(subjectNames: SubjectNames) = PaperDomainModel(
+@Serializable
+data class CategoryEntry(
+    val categoryName: String,
+    val categoryId: String
+)
+
+fun PaperEntity.toDomainModel() = PaperDomainModel(
     id = id,
     updated = updated?.convertDateDefault(),
     published = published?.convertDateDefault(),
@@ -32,6 +40,10 @@ fun PaperEntity.toDomainModel(subjectNames: SubjectNames) = PaperDomainModel(
     doi = doi,
     links = links?.map { DomainLink(it) },
     comment = comment,
-    categoryId = category,
-    category = category?.let { subjectNames[it] }
+    categories = categories?.map {
+        DomainCategory(
+            categoryName = it.categoryName,
+            categoryId = it.categoryId
+        )
+    }
 )

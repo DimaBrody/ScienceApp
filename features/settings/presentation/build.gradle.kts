@@ -7,5 +7,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.threading)
 
+    implementation(projects.shared.settings.domain)
+    implementation(projects.shared.settings.models.domain)
 }

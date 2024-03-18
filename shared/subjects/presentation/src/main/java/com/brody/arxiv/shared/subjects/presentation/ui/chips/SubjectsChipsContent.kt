@@ -1,5 +1,6 @@
-package com.brody.arxiv.shared.subjects.presentation
+package com.brody.arxiv.shared.subjects.presentation.ui.chips
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -18,15 +19,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.PointerIcon.Companion.Text
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.brody.arxiv.designsystem.theme.FilterTitleText
+import com.brody.arxiv.designsystem.theme.FilterTitleTextTheme
 import com.brody.arxiv.designsystem.ui.chips.ArxivChip
 import com.brody.arxiv.shared.subjects.models.presentation.SubjectChipData
 import com.brody.arxiv.shared.subjects.models.presentation.SubjectsRequest
@@ -37,19 +38,25 @@ import com.brody.arxiv.shared.subjects.presentation.dimens.SubjectsDimens
 fun SubjectsChipsContent(
     subjectsRequest: SubjectsRequest,
     modifier: Modifier = Modifier,
-    subjectsViewModel: SubjectsViewModel = hiltViewModel(),
     onSubjectChipsUpdated: (List<SubjectChipData>) -> Unit,
+    subjectsViewModel: SubjectsChipsViewModel = hiltViewModel(),
     content: @Composable (() -> Unit)? = null
 ) {
-    subjectsViewModel.requestSubjects(subjectsRequest)
+    LaunchedEffect(subjectsRequest) {
+        subjectsViewModel.requestSubjects(subjectsRequest)
+    }
 
-    val uiState by subjectsViewModel.uiState.collectAsStateWithLifecycle()
+    val chipsUiState by subjectsViewModel.uiState.collectAsStateWithLifecycle()
 
-    when (uiState) {
+    when (chipsUiState) {
         is SubjectsUiState.FetchedOnboarding -> {
             val scroll = rememberScrollState(0)
-            val chips = (uiState as SubjectsUiState.FetchedOnboarding).chips
-            onSubjectChipsUpdated(chips.filter { it.second }.map { it.first })
+            val chips = (chipsUiState as SubjectsUiState.FetchedOnboarding).chips
+
+            LaunchedEffect(chipsUiState) {
+                Log.d("HELLO3", chipsUiState.toString())
+                onSubjectChipsUpdated(chips.filter { it.second }.map { it.first })
+            }
 
             FlowRow(
                 modifier
@@ -80,17 +87,17 @@ fun SubjectsChipsContent(
         }
 
         is SubjectsUiState.FetchedFilters -> {
-            val excludedNodes = (uiState as SubjectsUiState.FetchedFilters).excludedNodes
+            val excludedNodes = (chipsUiState as SubjectsUiState.FetchedFilters).excludedNodes
             onSubjectChipsUpdated(excludedNodes)
 
-            val chips = (uiState as SubjectsUiState.FetchedFilters).chips
+            val chips = (chipsUiState as SubjectsUiState.FetchedFilters).chips
 
 
             chips.entries.forEach {
                 Column {
                     Text(
                         text = it.key,
-                        style = FilterTitleText,
+                        style = FilterTitleTextTheme,
                         modifier = Modifier.padding(start = 16.dp)
                     )
                     Spacer(Modifier.height(20.dp))

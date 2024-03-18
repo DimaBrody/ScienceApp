@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -16,21 +15,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.brody.arxiv.designsystem.dimens.Dimens
+import com.brody.arxiv.designsystem.theme.OnboardingUnderSearchTheme
 import com.brody.arxiv.designsystem.ui.button.DefaultTextButton
 import com.brody.arxiv.designsystem.ui.button.PrimaryButton
 import com.brody.arxiv.features.onboarding.R
-import com.brody.arxiv.shared.search.presentation.ui.SearchBarSubjects
+import com.brody.arxiv.shared.search.presentation.ui.ExpandableSearchBar
 import com.brody.arxiv.shared.subjects.models.presentation.SubjectChipData
 import com.brody.arxiv.shared.subjects.models.presentation.SubjectsRequest
-import com.brody.arxiv.shared.subjects.presentation.SubjectsChipsContent
+import com.brody.arxiv.shared.subjects.presentation.ui.chips.SubjectsChipsContent
 import kotlinx.collections.immutable.ImmutableList
 
 
 @Composable
 fun SubjectsPage(
     onSubjectChipsUpdated: (List<SubjectChipData>) -> Unit,
-    onCurrentSelectedSubjects: () -> List<Int>,
     onCompleteClick: () -> Unit,
+    onGetCurrentChips: () -> List<Int>,
     updatedSubjects: () -> MutableState<ImmutableList<SubjectChipData>?>,
     onBackClicked: () -> Unit,
 ) {
@@ -46,12 +46,13 @@ fun SubjectsPage(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SearchBarSubjects(onCurrentSelectedSubjects)
+            ExpandableSearchBar(onGetCurrentChips)
+
             Text(
                 text = stringResource(id = R.string.select_subjects_desc),
                 modifier = Modifier.padding(Dimens.spacingNormal),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium
+                style = OnboardingUnderSearchTheme
             )
         }
 
