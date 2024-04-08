@@ -17,22 +17,20 @@
 package com.brody.arxiv.application
 
 import android.app.Application
-import coil.ImageLoader
-import coil.ImageLoaderFactory
-import com.skydoves.snitcher.Snitcher
+import android.util.Log
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
+import dagger.hilt.EntryPoint
+import dagger.hilt.EntryPoints
+import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
-import javax.inject.Provider
 
 @HiltAndroidApp
-class ArxivApplication : Application(), ImageLoaderFactory {
-
-    @Inject
-    lateinit var imageLoader: Provider<ImageLoader>
+class ArxivApplication : Application(){
 
     override fun onCreate() {
         super.onCreate()
-
     }
-    override fun newImageLoader(): ImageLoader = imageLoader.get()
 }

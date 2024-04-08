@@ -8,7 +8,9 @@ class ToggleSaveItemUseCase @Inject constructor(
     private val savedPapersRepository: SavedPapersRepository
 ) {
     suspend operator fun invoke(id: String, item: SaveablePaperDataModel? = null) {
-        item?.let { savedPapersRepository.insertSaved(it) }
-            ?: savedPapersRepository.removeSaved(id)
+        item?.let {
+            val itemToInsert = if (it.hasSummaries && it.isSaved) it.copy(isSaved = false) else it
+            savedPapersRepository.insertSaved(itemToInsert)
+        } ?: savedPapersRepository.removeSaved(id)
     }
 }

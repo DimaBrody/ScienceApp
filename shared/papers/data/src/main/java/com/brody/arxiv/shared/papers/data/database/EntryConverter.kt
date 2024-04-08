@@ -4,6 +4,7 @@ import androidx.room.TypeConverter
 import com.brody.arxiv.shared.papers.models.data.Author
 import com.brody.arxiv.shared.papers.models.data.CategoryEntry
 import com.brody.arxiv.shared.papers.models.data.Link
+import com.brody.arxiv.shared.papers.models.data.LinkEntry
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -22,5 +23,13 @@ class EntryConverter {
 
     @TypeConverter
     fun toCategoriesList(categoriesString: String): List<CategoryEntry> =
+        json.decodeFromString(categoriesString)
+
+    @TypeConverter
+    fun fromLinkList(categories: List<LinkEntry>): String =
+        json.encodeToString(categories)
+
+    @TypeConverter
+    fun toLinkList(categoriesString: String): List<LinkEntry> =
         json.decodeFromString(categoriesString)
 }

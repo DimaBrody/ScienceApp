@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+import "com/brody/arxiv/core/data/proto/ai/language_model_config.proto";
+
+option java_package = "com.brody.arxiv.shared.settings.ai.data";
+option java_multiple_files = true;
+
+message AiPreferences {
+    AiModel selectedModel = 1;
+
+    map<string, ModelConfig> modelConfigs = 2;
+}
+
+enum AiModel {
+    // WARNING: Nothing should not be used for modelConfigs
+    NOTHING = 0;
+    OPENAI = 1;
+    GEMINI = 2;
+    CUSTOM = 3;
+}

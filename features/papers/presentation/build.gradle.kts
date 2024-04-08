@@ -14,7 +14,7 @@ dependencies {
     implementation(project(":shared:filters:presentation"))
     implementation(projects.shared.saved.models.domain)
 
-    implementation(projects.shared.settings.domain)
-    implementation(projects.shared.settings.models.domain)
+    implementation(projects.shared.settings.general.domain)
+    implementation(projects.shared.settings.general.models.domain)
     implementation(projects.shared.papers.models.presentation)
 }

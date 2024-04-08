@@ -12,12 +12,15 @@ data class PaperDomainModel(
     val comment: String?,
     val categories: List<DomainCategory>?,
     var isSaved: Boolean = false,
+    val hasSummaries: Boolean
 )
+
 data class DomainAuthor(
     val name: String?
 )
 
 data class DomainLink(
+    val isPdf: Boolean,
     val href: String?
 )
 

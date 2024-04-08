@@ -74,8 +74,6 @@ fun NavController.navigateToMain() = navigate(MAIN_ROUTE) {
 
 fun NavGraphBuilder.mainScreen(
     appState: ArxivAppState,
-    viewModelStoreOwner: ViewModelStoreOwner?,
-    lifecycleOwner: LifecycleOwner?,
     onNavGraph: NavGraphBuilder.(ScrollListener) -> Unit,
 ) {
     composable(route = MAIN_ROUTE) {
@@ -143,7 +141,6 @@ fun MainScreen(
             val isExplore = currentBottomNavDestination == BottomNavDestination.EXPLORE
             if (!isExplore) appState.updateSearchEnabled(false)
 
-            Log.d("HELLOW", "WTF $isExplore")
             if (currentBottomNavDestination != null) {
                 ArxivTopAppBar(
                     titleRes = currentBottomNavDestination.titleTextId,

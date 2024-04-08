@@ -13,6 +13,7 @@ import com.brody.arxiv.core.common.actions.MainToolbarAction
 import com.brody.arxiv.core.common.properties.weak
 import com.brody.arxiv.features.details.presentation.navigation.navigateToDetails
 import com.brody.arxiv.features.onboarding.presentation.ui.navigation.navigateToOnboarding
+import com.brody.arxiv.features.summary.presentation.navigation.navigateToSummary
 import com.brody.arxiv.shared.saved.models.domain.SaveablePaperDataModel
 import com.brody.arxiv.shared.search.models.presentation.SearchState
 import kotlinx.coroutines.CoroutineScope
@@ -88,17 +89,6 @@ class ArxivAppState(
         @Composable get() = navController
             .currentBackStackEntryAsState().value?.destination
 
-    fun navigateToOnboarding() = navController.navigateToOnboarding()
-
-    fun navigateToMain() = navController.navigateToMain()
-
-    fun navigateToDetails(paperModel: SaveablePaperDataModel) =
-        navController.navigateToDetails(paperModel)
-
-    fun navigateToolbarAction(action: MainToolbarAction) {
-        _toolbarActionsFlow.tryEmit(action)
-    }
-
     private val scrollFlow = MutableStateFlow(0)
 
     val topAppBarOverlapFlow: StateFlow<Boolean> =
@@ -115,6 +105,24 @@ class ArxivAppState(
         _searchFlow.update { state }
     }
 
+    fun navigateToOnboarding() = navController.navigateToOnboarding()
 
-//    fun navigateToMain() = navController.navigateToOnboarding()
+    fun navigateToMain() = navController.navigateToMain()
+
+    fun navigateToDetails(paperModel: SaveablePaperDataModel) =
+        navController.navigateToDetails(paperModel)
+
+    fun navigateToSummary(
+        paperModel: SaveablePaperDataModel,
+        isDeepLink: Boolean = false
+    ) = navController.navigateToSummary(paperModel)
+
+    fun navigateBackSummary(isDeepLink: Boolean) {
+        if (isDeepLink) navigateToMain()
+        else navController.navigateUp()
+    }
+
+    fun navigateToolbarAction(action: MainToolbarAction) {
+        _toolbarActionsFlow.tryEmit(action)
+    }
 }

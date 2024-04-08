@@ -1,5 +1,6 @@
 package com.brody.arxiv.ui
 
+import android.net.Uri
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,21 +18,18 @@ import com.brody.arxiv.navigation.base.ArxivComposeNavigator
 @Composable
 fun ArxivApp(
     isShowOnboarding: Boolean,
+    deepLinkRoute: String? = null,
     appState: ArxivAppState = rememberArxivAppState(),
 ) {
 //    LaunchedEffect(Unit) {
 //        arxivNavigator.handleNavigationCommands(appState.navController)
 //    }
 
-    val currentViewModelStoreOwner = LocalViewModelStoreOwner.current
-    val currentLifecycleOwner = LocalLifecycleOwner.current
-
     ArxivBackground {
         ArxivNavHost(
             appState = appState,
             isShowOnboarding = isShowOnboarding,
-            viewModelStoreOwner = currentViewModelStoreOwner,
-            lifecycleOwner = currentLifecycleOwner
+            deepLinkRoute = deepLinkRoute
         )
     }
 }

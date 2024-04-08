@@ -17,10 +17,13 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Bookmarks
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.KeyboardDoubleArrowDown
 import androidx.compose.material.icons.outlined.PictureAsPdf
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
@@ -35,6 +38,7 @@ object ArxivIcons {
     val Search = Icons.Filled.Search
     val Info = Icons.Outlined.Info
     val OpenInBrowser = Icons.AutoMirrored.Outlined.OpenInNew
+    val DoubleArrow = Icons.Outlined.KeyboardDoubleArrowDown
 
     val Summary = Icons.AutoMirrored.Outlined.TextSnippet
     val Pdf = Icons.Outlined.PictureAsPdf
@@ -59,5 +63,8 @@ object ArxivIcons {
     val SettingsActive = Icons.Filled.Settings
     val SettingsInactive = Icons.Outlined.Settings
 
+    // Password
+    val PasswordVisible = Icons.Filled.VisibilityOff
+    val PasswordHidden = Icons.Filled.Visibility
 
 }

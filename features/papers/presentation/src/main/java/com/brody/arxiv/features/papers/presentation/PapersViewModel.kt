@@ -1,6 +1,5 @@
 package com.brody.arxiv.features.papers.presentation
 
-import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,20 +9,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.brody.arxiv.core.threading.ArxivDispatchers
 import com.brody.arxiv.core.threading.Dispatcher
-import com.brody.arxiv.shared.settings.domain.usecases.GetQueryPrefUseCase
-import com.brody.arxiv.shared.settings.domain.usecases.UpdateQueryPrefUseCase
-import com.brody.arxiv.shared.settings.models.domain.QueryDataModel
+import com.brody.arxiv.shared.settings.general.domain.usecases.GetQueryPrefUseCase
+import com.brody.arxiv.shared.settings.general.domain.usecases.UpdateQueryPrefUseCase
+import com.brody.arxiv.shared.settings.general.models.domain.QueryDataModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

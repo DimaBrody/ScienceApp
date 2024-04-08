@@ -18,15 +18,23 @@ data class SavedPaperEntity(
     val summary: String,
     val author: List<String>,
     val doi: String,
-    val links: List<String>,
+    val links: List<SavedLinkEntry>,
     val comment: String,
-    val categories: List<SavedCategoryEntry>
+    val categories: List<SavedCategoryEntry>,
+    val isSaved: Boolean,
+    val hasSummaries: Boolean
 )
 
 @Serializable
 data class SavedCategoryEntry(
     val categoryName: String,
     val categoryId: String
+)
+
+@Serializable
+data class SavedLinkEntry(
+    val isPdf: Boolean,
+    val href: String
 )
 
 fun SavedPaperEntity.toDomainModel() = PaperDomainModel(
@@ -37,12 +45,13 @@ fun SavedPaperEntity.toDomainModel() = PaperDomainModel(
     authors = author.map { DomainAuthor(it) },
     summary = summary,
     doi = doi,
-    links = links.map { DomainLink(it) },
+    links = links.map { DomainLink(it.isPdf, it.href) },
     comment = comment,
-    isSaved = true,
+    isSaved = isSaved,
     categories = categories.map {
         DomainCategory(it.categoryName, it.categoryId)
-    }
+    },
+    hasSummaries = hasSummaries
 )
 
 fun SaveablePaperDataModel.toEntityModel() = SavedPaperEntity(
@@ -53,7 +62,9 @@ fun SaveablePaperDataModel.toEntityModel() = SavedPaperEntity(
     author = authors,
     summary = summary,
     doi = doi,
-    links = links,
+    links = links.map { SavedLinkEntry(it.isPdf, it.href) },
     comment = comment,
-    categories = categories.map { SavedCategoryEntry(it.categoryName, it.categoryId) }
+    categories = categories.map { SavedCategoryEntry(it.categoryName, it.categoryId) },
+    isSaved = isSaved,
+    hasSummaries = hasSummaries
 )

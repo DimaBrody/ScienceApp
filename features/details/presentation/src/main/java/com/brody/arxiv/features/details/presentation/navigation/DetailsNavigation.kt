@@ -1,7 +1,9 @@
 package com.brody.arxiv.features.details.presentation.navigation
 
 import android.net.Uri
-import androidx.compose.material3.Text
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -13,7 +15,6 @@ import com.brody.arxiv.designsystem.animations.scaleOutOfContainer
 import com.brody.arxiv.features.details.presentation.DetailsScreen
 import com.brody.arxiv.features.details.presentation.models.toPresentationModel
 import com.brody.arxiv.shared.saved.models.domain.SaveablePaperDataModel
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 private const val DETAILS_ROUTE = "details_route"
@@ -31,6 +32,7 @@ fun NavController.navigateToDetails(
 }
 
 fun NavGraphBuilder.detailsScreen(
+    onSummaryClicked: (SaveablePaperDataModel) -> Unit,
     onBackClicked: () -> Unit
 ) {
     composable(route = DETAILS_ROUTE_FULL,
@@ -38,59 +40,24 @@ fun NavGraphBuilder.detailsScreen(
             type = NavType.StringType
         }),
         enterTransition = {
-//            when (initialState.destination.route) {
-//                DETAILS_ROUTE ->
-//            slideIntoContainer(
-//                AnimatedContentTransitionScope.SlideDirection.Left,
-//                animationSpec = tween(700)
-//            )
-            scaleIntoContainer()
-
-//                else -> null
-//            }
+            fadeIn(tween(300))
         },
         exitTransition = {
-//            when (targetState.destination.route) {
-//                DETAILS_ROUTE ->
-//            slideOutOfContainer(
-//                AnimatedContentTransitionScope.SlideDirection.Left,
-//                animationSpec = tween(700)
-//            )
-            scaleOutOfContainer(direction = ScaleTransitionDirection.INWARDS)
-//
-//                else -> null
-//            }?
+            fadeOut(tween(150))
         },
         popEnterTransition = {
-//            when (initialState.destination.route) {
-//                DETAILS_ROUTE ->
-//            slideIntoContainer(
-//                AnimatedContentTransitionScope.SlideDirection.Right,
-//                animationSpec = tween(700)
-//            )
-            scaleIntoContainer(direction = ScaleTransitionDirection.OUTWARDS)
-
-//                else -> null
-//            }
+            fadeIn(tween(300))
         },
         popExitTransition = {
-//            when (targetState.destination.route) {
-//                DETAILS_ROUTE ->
-//            slideOutOfContainer(
-//                AnimatedContentTransitionScope.SlideDirection.Right,
-//                animationSpec = tween(700)
-//            )
-            scaleOutOfContainer()
-
-//                else -> null
-//            }
+            fadeOut(tween(150))
         }) { backStackEntry ->
 
         val paperModelJson = Uri.decode(backStackEntry.arguments?.getString("paperModelJson"))
         val paperModel = Json.decodeFromString(SaveablePaperDataModel.serializer(), paperModelJson)
 
         DetailsScreen(
-            detailsUiModel = paperModel.toPresentationModel(),
+            saveableDataModel = paperModel,
+            onSummaryClicked = onSummaryClicked,
             onBackClicked = onBackClicked
         )
     }

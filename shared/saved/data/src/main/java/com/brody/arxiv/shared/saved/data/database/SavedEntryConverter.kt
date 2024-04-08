@@ -2,6 +2,7 @@ package com.brody.arxiv.shared.saved.data.database
 
 import androidx.room.TypeConverter
 import com.brody.arxiv.shared.saved.models.data.SavedCategoryEntry
+import com.brody.arxiv.shared.saved.models.data.SavedLinkEntry
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -21,5 +22,13 @@ class SavedEntryConverter {
     @TypeConverter
     fun toCategoriesList(categoriesString: String): List<SavedCategoryEntry> =
         json.decodeFromString(categoriesString)
+
+    @TypeConverter
+    fun fromLinksList(links: List<SavedLinkEntry>): String =
+        json.encodeToString(links)
+
+    @TypeConverter
+    fun toLinksList(linksString: String): List<SavedLinkEntry> =
+        json.decodeFromString(linksString)
 
 }

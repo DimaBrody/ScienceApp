@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option java_package = "com.brody.arxiv.shared.settings.general.data";
+option java_multiple_files = true;
+
+message SettingsPreferences {
+    // Make isNot to have default value "false" as "true"
+    bool isNotSavePdfs = 1;
+}

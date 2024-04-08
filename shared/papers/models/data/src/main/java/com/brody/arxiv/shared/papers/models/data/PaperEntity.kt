@@ -19,7 +19,7 @@ data class PaperEntity(
     val summary: String?,
     val author: List<String>?,
     val doi: String?,
-    val links: List<String>?,
+    val links: List<LinkEntry>?,
     val comment: String?,
     val categories: List<CategoryEntry>?,
 )
@@ -30,6 +30,13 @@ data class CategoryEntry(
     val categoryId: String
 )
 
+@Serializable
+data class LinkEntry(
+    val isPdf: Boolean,
+    val href: String?
+)
+
+
 fun PaperEntity.toDomainModel() = PaperDomainModel(
     id = id,
     updated = updated?.convertDateDefault(),
@@ -38,12 +45,13 @@ fun PaperEntity.toDomainModel() = PaperDomainModel(
     authors = author?.map { DomainAuthor(it) },
     summary = summary,
     doi = doi,
-    links = links?.map { DomainLink(it) },
+    links = links?.map { DomainLink(it.isPdf, it.href) },
     comment = comment,
     categories = categories?.map {
         DomainCategory(
             categoryName = it.categoryName,
             categoryId = it.categoryId
         )
-    }
+    },
+    hasSummaries = false
 )

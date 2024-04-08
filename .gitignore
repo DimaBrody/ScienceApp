@@ -12,6 +12,7 @@
 bin/
 gen/
 out/
+extracted_protos/
 
 # Gradle files
 .gradle/

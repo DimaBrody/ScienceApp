@@ -27,7 +27,7 @@ viewModelLifecycle = "1.1.0"
 generativeAI = "0.2.0"
 googleSecretPlugin = "2.0.1"
 hilt = "2.50"
-hiltWorker = "1.1.0"
+hiltWorker = "1.2.0"
 junit4 = "4.13.2"
 kotlin = "1.9.22"
 kotlinSerialization = "1.6.2"
@@ -59,7 +59,8 @@ pullRefresh = "1.1.1"
 firebaseCrashlyticsBuildtools = "2.9.9"
 browser = "1.8.0"
 markdown = "0.4.1"
-
+pdfExtract = "2.0.27.0"
+crypto = "1.7.0"
 
 
 [libraries]
@@ -101,6 +102,7 @@ androidx-worker = { group = "androidx.work", name = "work-runtime-ktx", version.
 androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastore" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+hilt-androidx-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltWorker" }
 hilt-worker = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltWorker" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 viewmodel-lifecycle = { group = "com.github.skydoves", name = "viewmodel-lifecycle", version.ref = "viewModelLifecycle" }
@@ -108,6 +110,7 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlin-immutable" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlin-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
+kotlin-serialization-protobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "kotlinSerialization" }
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 
@@ -129,7 +132,11 @@ androidx-browser = { group = "androidx.browser", name = "browser", version.ref =
 google-generativeai = { module = "com.google.ai.client.generativeai:generativeai", version.ref = "generativeAI" }
 android-xmlutil = { group = "io.github.pdvrieze.xmlutil", name = "serialization-android", version.ref = "xmlUtil" }
 retrofit-converter = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "retrofitConverter" }
-compose-markdown = { group = "com.github.jeziellago", name= "compose-markdown", version.ref = "markdown" }
+compose-markdown = { group = "com.github.jeziellago", name = "compose-markdown", version.ref = "markdown" }
+android-pdfbox = { group = "com.tom-roush", name = "pdfbox-android", version.ref = "pdfExtract" }
+langdroid-core = { module = "com.arxiv.langdroid:core" }
+langdroid-summary = { module = "com.arxiv.langdroid:summary" }
+crypto-tink = { group = "com.google.crypto.tink", name = "tink-android", version.ref = "crypto" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }

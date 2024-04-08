@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+option java_package = "com.brody.arxiv.shared.settings.ai.data";
+option java_multiple_files = true;
+
+message ModelConfig {
+    bool has_key = 1;
+    google.protobuf.FloatValue temperature = 2;
+    bool is_no_stream = 3;
+    google.protobuf.FloatValue top_p = 4;
+    google.protobuf.Int32Value top_k = 5;
+    google.protobuf.FloatValue frequency_penalty = 6;
+}

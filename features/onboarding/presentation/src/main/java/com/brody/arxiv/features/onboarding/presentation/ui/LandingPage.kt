@@ -17,7 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.brody.arxiv.designsystem.dimens.Dimens
 import com.brody.arxiv.designsystem.theme.OnboardingSmallTheme
 import com.brody.arxiv.designsystem.theme.OnboardingTitleLargeTheme
-import com.brody.arxiv.designsystem.ui.button.PrimaryButton
+import com.brody.arxiv.designsystem.ui.buttons.PrimaryButton
 import com.brody.arxiv.features.onboarding.R
 import com.brody.arxiv.designsystem.R as designR
 

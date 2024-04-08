@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -54,7 +55,8 @@ import com.brody.arxiv.core.common.typealiases.ScrollListener
 import com.brody.arxiv.designsystem.theme.ArxivTheme
 import com.brody.arxiv.designsystem.theme.OnSurface60
 import com.brody.arxiv.designsystem.theme.OnSurfaceVariant
-import com.brody.arxiv.designsystem.ui.button.PrimaryButton
+import com.brody.arxiv.designsystem.theme.PaperLabelSmall
+import com.brody.arxiv.designsystem.ui.buttons.PrimaryButton
 import com.brody.arxiv.designsystem.ui.icons.ArxivIcons
 import com.brody.arxiv.designsystem.ui.list.composableScrollListener
 import com.brody.arxiv.designsystem.ui.refresh.ArxivRefresh
@@ -328,7 +330,7 @@ private fun PapersItem(
             ) {
                 Text(
                     text = paper.updated,
-                    style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.1.sp)
+                    style = PaperLabelSmall
                 )
                 val category = paper.primaryCategory
                 if (category != null) {
@@ -341,12 +343,24 @@ private fun PapersItem(
                     }
                     Text(
                         text = category.categoryName,
-                        style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.1.sp),
+                        style = PaperLabelSmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        textDecoration = TextDecoration.Underline
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.weight(1f)
                     )
                 }
+                if (paper.hasSummaries) {
+                    Spacer(Modifier.width(8.dp))
+                    Box(contentAlignment = Alignment.CenterEnd) {
+                        Text(
+                            text = "Summarized",
+                            style = PaperLabelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+
             }
         }
     }
@@ -402,7 +416,8 @@ private fun PapersPreview() {
                 links = listOf(),
                 comment = "Hello",
                 isSaved = true,
-                categories = listOf(PaperUiCategory("Astronomics", ""))
+                categories = listOf(PaperUiCategory("Astronomics", "")),
+                hasSummaries = true
             ), onPaperClicked = { }, saveItem = { _, _ -> }
         )
     }

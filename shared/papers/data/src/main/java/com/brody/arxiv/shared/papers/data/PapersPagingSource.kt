@@ -64,14 +64,14 @@ internal class PapersPagingSource(
                     val urlQuery = query.createUrl(limit, page)
                     val data = papersDataSource.getPapers(urlQuery)
 
-                    Log.d("HELLO", "BEFORE")
+//                    Log.d("HELLO", "BEFORE")
                     if (page == 0) {
                         data.entry?.let { entries ->
                             papersDatabase.papersDao()
                                 .replaceAll(entries.map { it.toEntityModel(subjectNames) })
                         }
                     }
-                    Log.d("HELLO", "AFTER")
+//                    Log.d("HELLO", "AFTER")
 
                     val nextPage = if (data.entry.isNullOrEmpty()) {
                         null

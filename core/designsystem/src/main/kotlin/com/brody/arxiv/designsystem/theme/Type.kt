@@ -1,5 +1,6 @@
 package com.brody.arxiv.designsystem.theme
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -79,13 +80,30 @@ val OnboardingSmallTheme = Typography.bodyLarge.copy(
     color = OnSurface60
 )
 
-val OnboardingUnderSearchTheme = Typography.bodyMedium.copy(
+val HelperUnderTextTheme = Typography.bodyMedium.copy(
     color = OnSurface60,
-    fontWeight = FontWeight.Medium,
     letterSpacing = (0.1).sp
+)
+
+val OnboardingUnderSearchTheme = HelperUnderTextTheme.copy(
+    fontWeight = FontWeight.Medium,
+)
+
+val PrimaryHeaderText = Typography.bodyMedium.copy(
+    fontWeight = FontWeight.Medium,
+    color = Primary
+)
+
+val SecondaryHeaderText = Typography.bodyMedium.copy(
+    fontWeight = FontWeight.Medium,
+    color = OnSecondary
 )
 
 val FilterTitleTextTheme = Typography.bodyLarge.copy(
     fontWeight = FontWeight.Medium,
     color = OnSurface40,
+)
+
+val PaperLabelSmall = Typography.labelSmall.copy(
+    letterSpacing = 0.1.sp
 )

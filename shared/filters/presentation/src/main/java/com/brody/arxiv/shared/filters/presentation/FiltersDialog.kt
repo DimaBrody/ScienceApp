@@ -34,7 +34,7 @@ import com.brody.arxiv.designsystem.ui.icons.ArxivIcons
 import com.brody.arxiv.shared.papers.models.presentation.DisplayableEnum
 import com.brody.arxiv.shared.papers.models.presentation.SortBy
 import com.brody.arxiv.shared.papers.models.presentation.SortOrder
-import com.brody.arxiv.shared.settings.models.domain.QueryDataModel
+import com.brody.arxiv.shared.settings.general.models.domain.QueryDataModel
 import com.brody.arxiv.shared.subjects.models.presentation.SubjectsRequest
 import com.brody.arxiv.shared.subjects.presentation.ui.chips.SubjectsChipsContent
 import kotlinx.coroutines.flow.MutableStateFlow

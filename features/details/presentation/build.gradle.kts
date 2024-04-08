@@ -8,6 +8,7 @@ android {
 
 dependencies {
     implementation(projects.core.threading)
+    implementation(projects.core.pdf.download)
 
     implementation(projects.shared.saved.domain)
     implementation(projects.shared.saved.models.domain)
@@ -15,5 +16,5 @@ dependencies {
 
     implementation(libs.androidx.browser)
     implementation(libs.kotlin.serialization)
-    implementation(libs.compose.markdown)
+//    implementation(libs.compose.markdown)
 }

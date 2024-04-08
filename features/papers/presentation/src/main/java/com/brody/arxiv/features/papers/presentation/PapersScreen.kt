@@ -1,8 +1,6 @@
 package com.brody.arxiv.features.papers.presentation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,9 +13,8 @@ import com.brody.arxiv.shared.filters.presentation.FiltersDialog
 import com.brody.arxiv.shared.papers.models.presentation.FetchPapers
 import com.brody.arxiv.shared.papers.presentation.ui.PapersList
 import com.brody.arxiv.shared.saved.models.domain.OnPaperClicked
-import com.brody.arxiv.shared.saved.models.domain.SaveablePaperDataModel
-import com.brody.arxiv.shared.settings.models.domain.QueryDataModel
-import com.brody.arxiv.shared.settings.models.domain.toFetchPapers
+import com.brody.arxiv.shared.settings.general.models.domain.QueryDataModel
+import com.brody.arxiv.shared.settings.general.models.domain.toFetchPapers
 import kotlinx.coroutines.flow.SharedFlow
 
 @Composable

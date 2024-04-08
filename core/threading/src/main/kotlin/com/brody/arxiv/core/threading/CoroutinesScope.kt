@@ -35,7 +35,7 @@ object CoroutinesScope {
     @Singleton
     @ApplicationScope
     fun providesCoroutineScope(
-        @Dispatcher(ArxivDispatchers.Default) dispatcher: CoroutineDispatcher,
+        @Dispatcher(ArxivDispatchers.IO) dispatcher: CoroutineDispatcher,
     ): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
 }
 

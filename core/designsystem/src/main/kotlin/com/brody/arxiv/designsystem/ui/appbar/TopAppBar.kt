@@ -26,7 +26,7 @@ fun ArxivTopAppBar(
     title: String? = null,
     navigationIcon: ImageVector? = null,
     navigationIconContentDescription: String? = null,
-    actionIcons: List<ImageVector>?,
+    actionIcons: List<ImageVector>? = null,
     actionIconContentDescription: String? = null,
     modifier: Modifier = Modifier,
     colors: TopAppBarColors = ArxivTopAppBarColors,

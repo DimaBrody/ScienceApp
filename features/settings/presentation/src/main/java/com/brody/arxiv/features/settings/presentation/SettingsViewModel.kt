@@ -8,9 +8,8 @@ import com.brody.arxiv.core.threading.Dispatcher
 import com.brody.arxiv.features.settings.presentation.models.SettingsGeneralUiModel
 import com.brody.arxiv.features.settings.presentation.models.toPresentationModel
 import com.brody.arxiv.features.settings.presentation.models.toSaveModel
-import com.brody.arxiv.shared.settings.domain.usecases.GetSettingsUseCase
-import com.brody.arxiv.shared.settings.domain.usecases.UpdateSettingsUseCase
-import com.brody.arxiv.shared.settings.models.domain.SettingsDataModel
+import com.brody.arxiv.shared.settings.general.domain.usecases.GetSettingsUseCase
+import com.brody.arxiv.shared.settings.general.domain.usecases.UpdateSettingsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted

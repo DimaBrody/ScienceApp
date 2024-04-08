@@ -1,7 +1,9 @@
 package com.brody.arxiv.features.settings.presentation.models
 
 import androidx.compose.runtime.Immutable
-import com.brody.arxiv.shared.settings.models.domain.SettingsDataModel
+import com.brody.arxiv.shared.settings.general.models.domain.CombinedSettingsDataModel
+import com.brody.arxiv.shared.settings.general.models.domain.SettingsDataModel
+import com.brody.arxiv.shared.summary.models.domain.SettingsSummaryDataModel
 
 @Immutable
 data class SettingsGeneralUiModel(
@@ -18,14 +20,12 @@ data class SettingsGeneralUiModel(
 }
 
 fun SettingsGeneralUiModel.toSaveModel() =
-    SettingsDataModel(
+    CombinedSettingsDataModel(
         saveSummaries.value,
         savePdfs.value
     )
 
-fun SettingsDataModel.toPresentationModel() = SettingsGeneralUiModel(
-    isSaveSummaries = isSaveSummaries,
-    isSavePdfs = isSavePdfs
+fun CombinedSettingsDataModel.toPresentationModel() = SettingsGeneralUiModel(
+    isSavePdfs = isSavePdfs,
+    isSaveSummaries = isSaveSummaries
 )
-
-

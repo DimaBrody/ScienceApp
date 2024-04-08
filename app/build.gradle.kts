@@ -71,7 +71,6 @@ secrets {
 }
 
 dependencies {
-
     implementation(project(":core:designsystem"))
     implementation(project(":core:data:network"))
 
@@ -81,6 +80,7 @@ dependencies {
     implementation(project(":features:saved:presentation"))
     implementation(project(":features:settings:presentation"))
     implementation(project(":features:details:presentation"))
+    implementation(project(":features:summary:presentation"))
 
     implementation(project(":shared:subjects:domain"))
     implementation(project(":shared:subjects:models:domain"))
@@ -94,7 +94,9 @@ dependencies {
     implementation(project(":shared:subjects:data"))
     implementation(project(":shared:papers:data"))
     implementation(project(":shared:saved:data"))
-    implementation(project(":shared:settings:data"))
+    implementation(project(":shared:settings:general:data"))
+    implementation(project(":shared:settings:ai:data"))
+    implementation(project(":shared:summary:data"))
 
 
     // compose
@@ -111,8 +113,10 @@ dependencies {
 
     // jetpack
     implementation(libs.androidx.startup)
+    implementation(libs.androidx.worker)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.hilt.worker)
     ksp(libs.hilt.compiler)
 
     // crash tracer & restorer

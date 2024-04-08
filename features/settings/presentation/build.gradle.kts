@@ -9,6 +9,9 @@ android {
 dependencies {
     implementation(projects.core.threading)
 
-    implementation(projects.shared.settings.domain)
-    implementation(projects.shared.settings.models.domain)
+    implementation(projects.shared.settings.ai.presentation)
+
+    implementation(projects.shared.settings.general.domain)
+    implementation(projects.shared.settings.general.models.domain)
+    implementation(projects.shared.summary.models.domain)
 }

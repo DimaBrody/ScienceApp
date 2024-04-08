@@ -16,8 +16,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.brody.arxiv.designsystem.dimens.Dimens
 import com.brody.arxiv.designsystem.theme.OnboardingUnderSearchTheme
-import com.brody.arxiv.designsystem.ui.button.DefaultTextButton
-import com.brody.arxiv.designsystem.ui.button.PrimaryButton
+import com.brody.arxiv.designsystem.ui.buttons.DefaultTextButton
+import com.brody.arxiv.designsystem.ui.buttons.PrimaryButton
 import com.brody.arxiv.features.onboarding.R
 import com.brody.arxiv.shared.search.presentation.ui.ExpandableSearchBar
 import com.brody.arxiv.shared.subjects.models.presentation.SubjectChipData

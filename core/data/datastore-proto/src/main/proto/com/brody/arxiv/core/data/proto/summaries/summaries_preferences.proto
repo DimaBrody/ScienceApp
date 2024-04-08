@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "com.brody.arxiv.shared.summary.data";
+option java_multiple_files = true;
+
+message SummaryPreferences {
+  // Make isNot to have default value "false" as "true"
+  bool isNotSaveSummary = 1;
+  SummaryType summaryType = 2;
+  string language = 3;
+}
+
+enum SummaryType {
+  FAN = 0;
+  STUDENT = 1;
+  EXPERT = 2;
+}

@@ -40,7 +40,7 @@ private val LightColorScheme = lightColorScheme(
     outline = Outline,
 
     primaryContainer = PrimaryContainer,
-    onPrimaryContainer = OnPrimaryContainer
+    onPrimaryContainer = OnPrimaryContainer,
 )
 
 @Composable

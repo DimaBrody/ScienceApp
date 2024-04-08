@@ -12,10 +12,11 @@ data class PaperUiModel(
     val summary: String,
     val authors: List<String>,
     val doi: String,
-    val links: List<String>,
+    val links: List<PaperUiLink>,
     val comment: String,
     val categories: List<PaperUiCategory>,
-    var isSaved: Boolean = false
+    val hasSummaries: Boolean,
+    var isSaved: Boolean = false,
 ) {
     val primaryCategory: PaperUiCategory?
         get() = categories.firstOrNull()
@@ -26,6 +27,11 @@ data class PaperUiCategory(
     val categoryId: String
 )
 
+data class PaperUiLink(
+    val isPdf: Boolean,
+    val href: String
+)
+
 fun PaperDomainModel.toPresentationModel() = PaperUiModel(
     id = id,
     updated = updated.orEmpty(),
@@ -34,10 +40,11 @@ fun PaperDomainModel.toPresentationModel() = PaperUiModel(
     summary = summary.clean(),
     authors = authors.mapNotNullEmpty { it.name },
     doi = doi.orEmpty(),
-    links = links.mapNotNullEmpty { it.href },
+    links = links.mapNotNullEmpty { it.href?.let { href -> PaperUiLink(it.isPdf, href) } },
     comment = comment.orEmpty(),
     categories = categories?.map { PaperUiCategory(it.categoryName, it.categoryId) }.orEmpty(),
-    isSaved = isSaved
+    isSaved = isSaved,
+    hasSummaries = hasSummaries
 )
 
 private fun String?.clean() = orEmpty()

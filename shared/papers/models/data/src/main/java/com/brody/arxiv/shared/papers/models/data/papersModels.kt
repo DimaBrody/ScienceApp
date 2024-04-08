@@ -43,6 +43,7 @@ data class Entry(
 @Serializable
 @XmlSerialName("link", "http://www.w3.org/2005/Atom")
 data class Link(
+    @XmlSerialName val title: String?,
     @XmlSerialName val href: String?,
     @XmlSerialName val rel: String?,
     @XmlSerialName val type: String?
@@ -69,11 +70,12 @@ fun Entry.toDomainModel(subjectNames: SubjectNames) = PaperDomainModel(
     authors = author?.map { DomainAuthor(it.name) },
     summary = summary,
     doi = doi,
-    links = links?.map { DomainLink(it.href) },
+    links = links?.map { DomainLink(it.title == "pdf", it.href) },
     comment = comment,
     categories = categories?.formatToCompleteCategories(subjectNames)?.map {
         DomainCategory(it.first, it.second)
     },
+    hasSummaries = false
 )
 
 fun Entry.toEntityModel(subjectNames: SubjectNames) = PaperEntity(id = id.orEmpty(),
@@ -83,7 +85,7 @@ fun Entry.toEntityModel(subjectNames: SubjectNames) = PaperEntity(id = id.orEmpt
     summary = summary,
     author = author?.mapNotNull { it.name },
     doi = doi,
-    links = links?.mapNotNull { it.href },
+    links = links?.map { LinkEntry(it.title == "pdf", it.href) },
     comment = comment,
     categories = categories.formatToCompleteCategories(subjectNames)?.map {
         CategoryEntry(it.first, it.second)
