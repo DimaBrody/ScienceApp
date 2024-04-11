@@ -1,8 +1,7 @@
 package com.brody.arxiv.shared.summary.data.di
 
-import com.brody.langdroid.core.LangDroidModel
-import com.brody.summary.SummaryChain
-import com.brody.summary.prompts.PromptTemplate
+import com.langdroid.core.LangDroidModel
+import com.langdroid.summary.SummaryChain
 
 interface SummaryChainFactory {
     fun create(

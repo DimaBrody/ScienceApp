@@ -7,3 +7,6 @@ fun createIdFromString(input: String, onNull: String): Int {
 
 fun Float.round(decimals: Int = 1): String =
     if (this % 1 == 0.0f) this.toInt().toString() else "%.${decimals}f".format(this)
+
+val String.sizeInBytes: Float
+    get() = this.length * 2f

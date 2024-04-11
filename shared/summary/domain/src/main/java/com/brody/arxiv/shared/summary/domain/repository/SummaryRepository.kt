@@ -4,8 +4,8 @@ import com.brody.arxiv.shared.summary.models.domain.SavedSummary
 import com.brody.arxiv.shared.summary.models.domain.SettingsSummaryDataModel
 import com.brody.arxiv.shared.summary.models.domain.SummaryLanguage
 import com.brody.arxiv.shared.summary.models.domain.SummaryType
-import com.brody.langdroid.core.LangDroidModel
-import com.brody.summary.SummaryState
+import com.langdroid.core.LangDroidModel
+import com.langdroid.summary.SummaryState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 

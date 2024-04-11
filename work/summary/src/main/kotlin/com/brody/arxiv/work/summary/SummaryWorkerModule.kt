@@ -64,6 +64,10 @@ internal abstract class SummaryWorkerModule {
                         SummaryWorkerState.Output.serializer()
                     )
                     subclass(
+                        SummaryWorkerState.Summarizing::class,
+                        SummaryWorkerState.Summarizing.serializer()
+                    )
+                    subclass(
                         SummaryWorkerState.Failure::class,
                         SummaryWorkerState.Failure.serializer()
                     )

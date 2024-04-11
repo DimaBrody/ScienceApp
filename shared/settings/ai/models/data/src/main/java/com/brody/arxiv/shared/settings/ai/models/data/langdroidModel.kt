@@ -1,9 +1,9 @@
 package com.brody.arxiv.shared.settings.ai.models.data
 
 import com.brody.arxiv.shared.settings.ai.models.domain.LanguageModel
-import com.brody.langdroid.core.models.GenerativeModel
-import com.brody.langdroid.core.models.gemini.GeminiModel
-import com.brody.langdroid.core.models.openai.OpenAiModel
+import com.langdroid.core.models.GenerativeModel
+import com.langdroid.core.models.gemini.GeminiModel
+import com.langdroid.core.models.openai.OpenAiModel
 
 fun LanguageModel.toLangdroidModel(apiKey: String): GenerativeModel = when (this) {
     LanguageModel.GEMINI -> GeminiModel.Pro(apiKey)

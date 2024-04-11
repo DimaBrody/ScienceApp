@@ -16,7 +16,7 @@ import com.brody.arxiv.shared.settings.ai.domain.repository.SettingsAiRepository
 import com.brody.arxiv.shared.settings.ai.models.data.ModelKeys
 import com.brody.arxiv.shared.settings.ai.models.data.toLangdroidModel
 import com.brody.arxiv.shared.settings.ai.models.domain.LanguageModel
-import com.brody.langdroid.core.LangDroidModel
+import com.langdroid.core.LangDroidModel
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.KeyTemplates
 import com.google.crypto.tink.aead.AeadConfig

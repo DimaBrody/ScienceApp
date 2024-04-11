@@ -4,7 +4,7 @@ import com.brody.arxiv.shared.saved.domain.usecases.ToggleSaveItemUseCase
 import com.brody.arxiv.shared.saved.models.domain.SaveablePaperDataModel
 import com.brody.arxiv.shared.summary.domain.repository.SummaryRepository
 import com.brody.arxiv.shared.summary.models.domain.SummaryType
-import com.brody.langdroid.core.LangDroidModel
+import com.langdroid.core.LangDroidModel
 import javax.inject.Inject
 
 class GenerateSummaryUseCase @Inject constructor(

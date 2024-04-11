@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">arxiv</string>
+    <string name="app_name">Scientific App</string>
 
     <string name="toolbar_nav_description">Back button</string>
     <string name="toolbar_support_description">Support button</string>

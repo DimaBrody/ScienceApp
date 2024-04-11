@@ -180,7 +180,7 @@ internal sealed class SummaryUiState(
     data class TextSplitting(override val text: String) : SummaryUiState(text)
     data class Saving(override val text: String) : SummaryUiState(text)
     data class Reduce(override val text: String) : SummaryUiState(text)
-
+    data class Summarizing(override val text: String) : SummaryUiState(text)
     data class Printing(override val text: String) : SummaryUiState(text)
 
     // Check is running
@@ -206,6 +206,7 @@ private fun SummaryWorkerState.toUiState(): SummaryUiState {
         is SummaryWorkerState.PdfExtracting -> SummaryUiState.PdfExtracting(text)
         is SummaryWorkerState.TextSplitting -> SummaryUiState.TextSplitting(text)
         is SummaryWorkerState.Saving -> SummaryUiState.Saving(text)
+        is SummaryWorkerState.Summarizing -> SummaryUiState.Summarizing(text)
         is SummaryWorkerState.Output -> SummaryUiState.Printing(text)
         is SummaryWorkerState.Reduce -> SummaryUiState.Reduce(text)
         is SummaryWorkerState.Finished -> SummaryUiState.Fetched(text)

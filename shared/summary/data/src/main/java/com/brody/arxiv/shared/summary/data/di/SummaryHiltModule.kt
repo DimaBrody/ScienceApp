@@ -14,10 +14,10 @@ import com.brody.arxiv.shared.summary.data.source.SummaryDataSource
 import com.brody.arxiv.shared.summary.data.source.SummaryDataSourceImpl
 import com.brody.arxiv.shared.summary.data.repository.SummaryRepositoryImpl
 import com.brody.arxiv.shared.summary.domain.repository.SummaryRepository
-import com.brody.langdroid.core.LangDroidModel
-import com.brody.summary.SummaryChain
-import com.brody.summary.prompts.PromptTemplate
-import com.brody.summary.prompts.PromptsAndMessage
+import com.langdroid.core.LangDroidModel
+import com.langdroid.summary.SummaryChain
+import com.langdroid.summary.prompts.PromptTemplate
+import com.langdroid.summary.prompts.PromptsAndMessage
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

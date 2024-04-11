@@ -1,6 +1,6 @@
 package com.brody.arxiv.work.summary.models
 
-import com.brody.summary.SummaryState
+import com.langdroid.summary.SummaryState
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 
@@ -34,6 +34,9 @@ sealed interface SummaryWorkerState {
             fun exception(t: Throwable) = Failure(t.toExceptionInfo())
         }
     }
+
+    @Serializable
+    data object Summarizing : SummaryWorkerState
 }
 
 @Serializable
@@ -52,18 +55,21 @@ fun SummaryWorkerState.toProcessingText(isNotification: Boolean): String = when 
     is SummaryWorkerState.TextSplitting -> "Splitting text..."
     is SummaryWorkerState.Saving -> "Saving summary..."
     is SummaryWorkerState.Reduce -> "Processing chunks $processedChunks/$allChunks"
+    is SummaryWorkerState.Summarizing -> "Summarizing text..."
     is SummaryWorkerState.Output -> if (isNotification) "Printing summary..." else text
     is SummaryWorkerState.Failure -> "Failed: ${exceptionInfo.message.orEmpty()}"
     is SummaryWorkerState.Finished ->
         if (isNotification || finalSummary.isNullOrEmpty()) "Summary is finished" else finalSummary!!
+
 }
 
 fun SummaryState.toWorkerState(): SummaryWorkerState = when (this) {
     is SummaryState.Idle -> SummaryWorkerState.Connecting // Assuming Idle corresponds to Connecting
     is SummaryState.TextSplitting -> SummaryWorkerState.TextSplitting
     is SummaryState.Reduce -> SummaryWorkerState.Reduce(processedChunks, allChunks)
+    is SummaryState.Summarizing -> SummaryWorkerState.Summarizing
     is SummaryState.Output -> SummaryWorkerState.Output(text)
-    is SummaryState.Finished -> SummaryWorkerState.Finished()
+    is SummaryState.Success -> SummaryWorkerState.Finished()
     is SummaryState.Failure -> SummaryWorkerState.Failure(t.toExceptionInfo())
 }
 

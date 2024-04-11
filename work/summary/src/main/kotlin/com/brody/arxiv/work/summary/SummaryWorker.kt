@@ -10,6 +10,7 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.brody.arxiv.core.common.utils.sizeInBytes
 import com.brody.arxiv.core.notifications.ArxivNotificationManager
 import com.brody.arxiv.core.pdf.download.PdfDownloadManager
 import com.brody.arxiv.core.pdf.extract.extractors.SimplePdfTextExtractor
@@ -38,7 +39,7 @@ import com.brody.arxiv.work.summary.converters.toLangdroidConfig
 import com.brody.arxiv.work.summary.models.toProcessingText
 import com.brody.arxiv.work.summary.models.toWorkerModel
 import com.brody.arxiv.work.summary.models.toWorkerState
-import com.brody.langdroid.core.LangDroidModel
+import com.langdroid.core.LangDroidModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CompletableDeferred
@@ -157,7 +158,6 @@ internal class SummaryWorker @AssistedInject constructor(
                     updateState(workerState)
                 }
         } catch (e: CancellationException) {
-            Log.d("HELLOCA", "CANCELLED")
             resultDeferred.completeExceptionally(e)
         } catch (e: Exception) {
             // Handle other exceptions, if necessary
@@ -197,11 +197,13 @@ internal class SummaryWorker @AssistedInject constructor(
     }
 
     private suspend fun updateState(state: SummaryWorkerState) {
-        if (state !is SummaryWorkerState.Output)
-            Log.d("HELLOWINS", state::class.qualifiedName.toString())
-        val stringState = workerStateConverter.serialize(state)
+//        if (state !is SummaryWorkerState.Output)
+//            Log.d("HELLOWINS", state::class.qualifiedName.toString())
 
-        setProgress(workDataOf(State to stringState))
+        val stringState: String = workerStateConverter.serialize(state)
+
+        if ((stringState.sizeInBytes + State.sizeInBytes) < 10240)
+            setProgress(workDataOf(State to stringState))
 
         if (!isStopped) {
             try {
