@@ -19,5 +19,5 @@ Return your response which covers all key points and ideas.
 
 Make it structured, make concise introduction, BULLET LIST with very detailed key points and ideas (!important to have list), and short concise thoughts at the end
 ```{text}```
-SUMMARY without header and with intro, detailed bullets and thoughts (thoughts if system message is not for expert):
+SUMMARY without header and with intro, detailed numeric list with sections and bullets of its ideas, and main idea of paper:
 """

@@ -61,6 +61,7 @@ browser = "1.8.0"
 markdown = "0.4.1"
 pdfExtract = "2.0.27.0"
 crypto = "1.7.0"
+moduleDependencies = "0.12"
 
 
 [libraries]
@@ -184,3 +185,4 @@ kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin1922
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin1922" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin1922" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
+module-dependencies = { id = "com.savvasdalkitsis.module-dependency-graph", version.ref = "moduleDependencies" }

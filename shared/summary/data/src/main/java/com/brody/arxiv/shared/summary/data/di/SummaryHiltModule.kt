@@ -61,6 +61,7 @@ internal interface SummaryHiltModule {
         fun provideSummaryDatabase(@ApplicationContext context: Context): SummaryDatabase =
             Room
                 .databaseBuilder(context, SummaryDatabase::class.java, "summaries_database")
+                .fallbackToDestructiveMigration()
                 .build()
 
         @Provides

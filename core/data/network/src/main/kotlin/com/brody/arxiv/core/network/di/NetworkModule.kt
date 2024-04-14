@@ -109,25 +109,4 @@ internal object NetworkModule {
             .addConverterFactory(xmlConverterFactory)
             .build()
     }
-
-    @Provides
-    @Singleton
-    fun imageLoader(
-        okHttpCallFactory: Call.Factory,
-        @ApplicationContext application: Context,
-    ): ImageLoader = ImageLoader.Builder(application)
-        .callFactory(okHttpCallFactory)
-        .components {
-            add(SvgDecoder.Factory())
-        }
-        // Assume most content images are versioned urls
-        // but some problematic images are fetching each time
-        .respectCacheHeaders(false)
-        .apply {
-            //TODO
-//      if (BuildConfig.DEBUG) {
-            logger(DebugLogger())
-//      }
-        }
-        .build()
 }

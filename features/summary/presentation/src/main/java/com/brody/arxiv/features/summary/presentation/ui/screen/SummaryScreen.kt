@@ -256,7 +256,7 @@ private fun SummaryScreenInternal(
                     Column {
                         Spacer(modifier = Modifier.height(24.dp))
                         SummaryText(summaryState = summaryState)
-                        Spacer(modifier = Modifier.height(12.dp))
+//                        Spacer(modifier = Modifier.height(12.dp))
                         BulletPointList(
                             text = summaryState.text,
                             modifier = interactionModifier
@@ -321,7 +321,8 @@ fun BulletPointList(
         sections.forEach { section ->
             // Split the section by lines to check for bullet points and numeric list items more accurately
             val lines = section.split("\n")
-             // Track if we are in a list (bullet or numeric)
+            // Track if we are in a list (bullet or numeric)
+            var isFirstElement = true
             lines.forEach { line ->
                 when {
                     line.trim().startsWith("-") -> {
@@ -348,11 +349,12 @@ fun BulletPointList(
                         }
                         // Render non-list line as regular text
                         RenderText(
-                            line, if (isListBefore) textPaddingValuesAfterList
+                            line, if (isListBefore || isFirstElement) textPaddingValuesAfterList
                             else defaultPaddingValues
                         )
                     }
                 }
+                isFirstElement = false
             }
         }
     }
@@ -549,7 +551,11 @@ private fun BoxScope.ScrollDownButtonWithAnimation(
 //        }
 //    }
 
-    val isNotScrolledToBottom = scrollState.value < scrollState.maxValue
+    var maxValue = scrollState.maxValue
+    if (maxValue == Int.MAX_VALUE)
+        maxValue = 0
+
+    val isNotScrolledToBottom = scrollState.value < maxValue
 
     AnimatedVisibility(
         modifier = Modifier.align(Alignment.BottomCenter),
