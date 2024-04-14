@@ -5,6 +5,7 @@
 Explore the latest and most influential papers on [Arxiv](https://arxiv.org/) and get main ideas and discoveries made by scientists from the whole world!
 
 Example of app summarization process:
+
 ![Arxiv App](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExajM0cWt1bjRpZzc4aTE3anU0a2wxZzNxNWZuNjE5M3N4OXQ4cm10dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CaEgFXJoyI4LnRqTJF/giphy.gif)
 
 
