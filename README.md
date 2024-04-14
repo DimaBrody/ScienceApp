@@ -19,10 +19,10 @@ There is *simplified* architecture diagram for one of features demonstrated in t
 
 <!---
  https://i.ibb.co/mCPPmrs/modules-3.jpg
- https://i.ibb.co/v3VxZp7/modules-2.jpg
+ https://i.ibb.co/3B0pw83/modules-2-1.jpg
  --->
 
-![Modules](https://i.ibb.co/v3VxZp7/modules-2.jpg)
+![Modules](https://i.ibb.co/3B0pw83/modules-2-1.jpg)
 
 Submodules like `:models` or `:presentation`, `:domain`, `:data` are not shown to keep diagram clear enough.
 
@@ -32,7 +32,7 @@ Submodules like `:models` or `:presentation`, `:domain`, `:data` are not shown t
 - Scroll and filter papers and science categories requesting [Arxiv API](https://info.arxiv.org/help/api/basics.html) with **Retrofit** and parsing XML responses
 - Save to **Room databases** and offline/errors handling
 - Using **protobuf** for setting and encrypted protobuf for storing AI keys
-- Download with ** Download Manager**, and extracting text from PDFs on background.
+- Download with **Download Manager**, and extracting text from PDFs on background.
 - **Notifications** and Deep Links with Jetpack Compose **Navigation**.
 - Implementation of  **Kotlin Coroutines** & **Listenable WorkManager**
 - Custom conventional plugins with `:build-logic` and `libs.versions` control
