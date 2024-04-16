@@ -38,6 +38,6 @@ Submodules like `:models` or `:presentation`, `:domain`, `:data` are not shown t
 - Custom conventional plugins with `:build-logic` and `libs.versions` control
 
 ### Design
-You can check my Figma design by which app:
+You can check my Figma design for this app:
 
 [![](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white&color=black)](https://www.figma.com/file/6gL0osXBq3t0tI7QpGwXij/Arxiv?type=design&node-id=3%3A2&mode=design&t=U2CYwkAf9kEYYskl-1) 
