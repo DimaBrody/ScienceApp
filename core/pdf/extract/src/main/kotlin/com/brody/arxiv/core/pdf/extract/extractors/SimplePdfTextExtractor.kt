@@ -25,7 +25,6 @@ open class SimplePdfTextExtractor @Inject constructor(
     init {
         if(!PDFBoxResourceLoader.isReady()) {
             PDFBoxResourceLoader.init(context)
-            Log.d("HELLOEXTRACT", "HERE")
         }
         try {
             val factory = SAXTransformerFactory.newInstance() as SAXTransformerFactory

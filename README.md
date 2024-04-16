@@ -36,3 +36,6 @@ Submodules like `:models` or `:presentation`, `:domain`, `:data` are not shown t
 - **Notifications** and Deep Links with Jetpack Compose **Navigation**.
 - Implementation of  **Kotlin Coroutines** & **Listenable WorkManager**
 - Custom conventional plugins with `:build-logic` and `libs.versions` control
+
+### Design
+You can check my Figma design by which app: ![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=flat&logo=figma&logoColor=white&color=black) 
